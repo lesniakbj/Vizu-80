@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1369371956 source:c:\users\brendan\documents\github\emu80\emu80\registers.cpp
+
+1369372161 source:c:\users\brendan\documents\github\emu80\emu80\main.cpp
+	<iostream>
+
