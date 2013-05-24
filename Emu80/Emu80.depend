@@ -1,6 +1,20 @@
 # depslib dependency file v1.0
-1369371956 source:c:\users\brendan\documents\github\emu80\emu80\registers.cpp
+1369374708 source:c:\users\brendan\documents\github\emu80\emu80\registers.cpp
+	"Registers.h"
 
 1369372161 source:c:\users\brendan\documents\github\emu80\emu80\main.cpp
 	<iostream>
+
+1369374923 c:\users\brendan\documents\github\emu80\emu80\registers.h
+	"Typedefs.h"
+
+1369372216 c:\users\brendan\documents\github\emu80\emu80\typedefs.h
+
+1369373547 source:c:\users\brendan\documents\github\emu80\emu80\emu80main.cpp
+
+1369374708 source:c:\users\brendan\documents\github\emu80\emu80\cpu.cpp
+	"CPU.h"
+
+1369374506 c:\users\brendan\documents\github\emu80\emu80\cpu.h
+	"Registers.h"
 
