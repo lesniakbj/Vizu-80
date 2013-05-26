@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1369545870 source:c:\users\brendan\documents\github\emu80\c++\nesemu.cpp
+	<fstream>
+	"CPU\CPUCore.h"
+	"Memory\Memory.h"
+
+1369546386 c:\users\brendan\documents\github\emu80\c++\cpu\cpucore.h
+	<fstream>
+
+1369546889 source:c:\users\brendan\documents\github\emu80\c++\cpu\cpucore.cpp
+	"CPUCore.h"
+
+1369546889 c:\users\brendan\documents\github\emu80\c++\memory\memory.h
+	<fstream>
+
+1369546942 source:c:\users\brendan\documents\github\emu80\c++\memory\memory.cpp
+	"Memory.h"
+
