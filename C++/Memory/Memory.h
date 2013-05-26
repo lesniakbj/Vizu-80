@@ -23,6 +23,7 @@ class Memory
         ~Memory(void);
 
         void init();
+        void reset();
 
         void readByte(two_bytes address);
         void writeByte(two_bytes address, two_bytes destination);

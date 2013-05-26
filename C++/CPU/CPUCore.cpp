@@ -18,3 +18,9 @@ void CPUCore::init(void)
 
     stackPointer = 0x00FD;
 }
+
+void CPUCore::reset(void)
+{
+    stackPointer -= 0x03;
+    flags = flags | 0x04;
+}

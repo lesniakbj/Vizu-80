@@ -14,6 +14,7 @@ class CPUCore
         ~CPUCore(void);
 
         void init();
+        void reset();
 
     private:
 
