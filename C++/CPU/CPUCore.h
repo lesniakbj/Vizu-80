@@ -13,12 +13,18 @@ class CPUCore
         CPUCore(void);
         ~CPUCore(void);
 
-        void init();
-        void reset();
+        void init(void);
+        void reset(void);
+
+        byte retreiveOpcode(void);
 
     private:
 
-        void decodeOpCode(void);
+        void decodeOpcode(void);
+
+        byte currentOP;
+        byte param1;
+        byte param2;
 
         // 8-Bit Registers (Accumulator & Index Registers, Stack Pointer)
         byte A;

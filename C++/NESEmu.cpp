@@ -12,24 +12,47 @@ CPUCore *cpu;
 Memory *mem;
 
 // Function Prototypes
-void initializeComponents();
+void initializeComponents(void);
+void emuStart(void);
 
-int main()
+int main(void)
 {
-    printf("Welcome to NES Emu\n");
-    printf("Made By: Brendan Lesniak\n");
+    printf("Welcome to BreNES Emulator!\n");
+    printf("Made By: Brendan Lesniak\n\n");
+
+    // Initialize Graphics & Rendering Environment
+
+    // Initialize User Input
 
     initializeComponents();
+
+    emuStart();
 
     return 0;
 }
 
 
-void initializeComponents()
+void initializeComponents(void)
 {
     cpu = new CPUCore;
     mem = new Memory;
 
     cpu->init();
     mem->init();
+}
+
+
+void emuStart(void)
+{
+    // Load the ROM into the CPU
+
+    // MAIN EMULATION LOOP
+    while(true)
+    {
+        // Emulate One Cycle
+
+        // Draw Results of Operations to the Screen
+
+        // Update Key Presses, Store in Memory
+    }
 }

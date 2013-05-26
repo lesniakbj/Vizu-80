@@ -22,14 +22,16 @@ class Memory
         Memory(void);
         ~Memory(void);
 
-        void init();
-        void reset();
+        void init(void);
+        void reset(void);
 
-        void readByte(two_bytes address);
-        void writeByte(two_bytes address, two_bytes destination);
+        void readByte(byte address);
+        void writeByte(byte address, byte destination);
 
         // Total System RAM (MAX 64kB)
         byte systemRAM[65535];
+
+        ADDRESS_MODE mode;
 };
 
 #endif // MEMORY_H_INCLUDED
