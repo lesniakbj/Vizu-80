@@ -1,7 +1,11 @@
-Emu80 - A Simple Z80 Emulator Sample
+Vizu-80 - The Visual ZiLOG z80 Emulator
 =====
-Author: 
-- Brendan Lesniak
+PROJECT TITLE: Vizu-80 - The Visual ZiLOG z80 Emulator
+PURPOSE OF PROJECT: To visually teach students the internal workings of a simple CPU, allowing them to step through each part of the instruction pipline.
+VERSION or DATE: 0.0.a
+HOW TO START THIS PROJECT: Run the main() method in the EmulationGUI Class
+AUTHORS: Brendan Lesniak
 
-About: 
-- This repository includes everything needed to emulate a specialized version of the Z80 CPU; which was used on various systems. Specifically, this Z80 Emulator is being coded as a Test-Bed for a GameBoy base, and as a means to get comfortable with emulation specific topics.
+Includes:
+	- GUI Component (initial implementation, 0.0.a) displaying z80 CPU Status
+	- z80 Emulator
