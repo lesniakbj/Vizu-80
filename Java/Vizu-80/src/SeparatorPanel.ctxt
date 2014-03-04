@@ -1,6 +1,0 @@
-#BlueJ class context
-comment0.params=leftColor\ rightColor
-comment0.target=SeparatorPanel(java.awt.Color,\ java.awt.Color)
-comment1.params=g
-comment1.target=void\ paintComponent(java.awt.Graphics)
-numComments=2
