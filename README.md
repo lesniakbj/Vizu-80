@@ -16,11 +16,19 @@ AUTHORS: Brendan Lesniak
 GUI Component:   
 --------------   
 
-	- GUI Component (initial implementation, 0.0.a) displaying z80 CPU Status   
+	- GUI Component (initial implementation, 0.0.a) displaying z80 CPU Status    
+	- Emulation GUI    
+	- DrawingUtils    
+	- JStatusBar
+	
 	
 	
 Emulator Component:
 -------------------   
 
-	- z80 Emulator   
+	- z80 Core   
+	- Memory, Device and CPU Interfaces
+	- Register Enumerations
+	- OpCode State (Timing) Tables
+	- CPU Related Exceptions
 	
