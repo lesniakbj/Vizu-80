@@ -1,22 +1,32 @@
 Vizu-80 - The Visual ZiLOG z80 Emulator
 =======================================
 
-PROJECT TITLE: Vizu-80 - The Visual ZiLOG z80 Emulator   
+PROJECT TITLE:    
 
-PURPOSE OF PROJECT: To visually teach students the internal workings of a simple CPU, allowing them to step through each part of the instruction pipline.   
+	- Vizu-80 - The Visual ZiLOG z80 Emulator   
 
-VERSION or DATE: 0.0.a   
+PURPOSE OF PROJECT:     
 
-HOW TO START THIS PROJECT: Run the main() method in the EmulationGUI Class   
+	- To teach students the internal workings of a simple CPU, visually stepping through the instruction pipline.   
 
-AUTHORS: Brendan Lesniak   
+VERSION:     
+
+	- v0.0.a   
+
+HOW TO START THIS PROJECT:    
+
+	- Run the main() method in the EmulationGUI Class   
+
+AUTHORS:     
+
+	- Brendan Lesniak   
 
 
 
 GUI Component:   
 --------------   
 
-	- GUI Component (initial implementation, 0.0.a) displaying z80 CPU Status    
+	- GUI Component (initial implementation, v0.0.a) displaying z80 CPU Status    
 	- Emulation GUI    
 	- DrawingUtils    
 	- JStatusBar
@@ -26,7 +36,7 @@ GUI Component:
 Emulator Component:
 -------------------   
 
-	- z80 Core   
+	- z80 Core (initial implementation, v0.0.a)     
 	- Memory, Device and CPU Interfaces
 	- Register Enumerations
 	- OpCode State (Timing) Tables
