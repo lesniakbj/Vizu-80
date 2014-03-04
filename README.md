@@ -7,7 +7,7 @@ PROJECT TITLE:
 
 PURPOSE OF PROJECT:     
 
-	- To visually teach students the internal workings of a simple CPU, allowing them to step through each part of the instruction pipline.   
+	- To teach students the internal workings of a simple CPU, visually stepping through the instruction pipline.   
 
 VERSION:     
 
