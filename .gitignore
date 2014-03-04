@@ -1,0 +1,9 @@
+# Java Class & Package Files #
+*.class
+*.jar
+*.war
+*.ear
+
+# BlueJ Files #
+*.ctxt
+*.bluej
