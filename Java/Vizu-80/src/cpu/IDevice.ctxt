@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=address
+comment0.target=int\ read(int)
+comment0.text=\r\n\ Read\ data\ from\ the\ indicated\ address\r\n\ \r\n\ @param\ address\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ The\ address\ that\ is\ read\ from\r\n\ @return\ 8-bits,\ packed\ into\ an\ int\r\n
+comment1.params=address\ data
+comment1.target=void\ write(int,\ int)
+comment1.text=\r\n\ Write\ data\ to\ the\ indicated\ address\r\n\ \r\n\ @param\ address\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ The\ address\ that\ data\ is\ to\ be\ written\ to\r\n\ @param\ data\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ The\ 8-bit\ value\ to\ be\ written\ to\ the\ address\r\n
+numComments=2

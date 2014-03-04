@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=
+comment0.target=CPUException()
+comment0.text=\r\n\ Empty\ exception\ for\ the\ Z80\ emulator\r\n
+comment1.params=msg
+comment1.target=CPUException(java.lang.String)
+comment1.text=\r\n\ Known\ exception\ for\ the\ Z80\ emulator\r\n\r\n\ @param\ msg\r\n\ \ \ \ \ \ \ \ \ \ \ \ Emulator\ exception\ message\r\n
+numComments=2

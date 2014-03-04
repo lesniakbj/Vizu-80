@@ -1,0 +1,43 @@
+Class documentation
+<---- javadoc command: ---->
+C:\Program Files\Java\jdk1.7.0_51\bin\javadoc.exe
+-author
+-version
+-nodeprecated
+-private
+-noindex
+-notree
+-nohelp
+-nonavbar
+-source
+1.7
+-classpath
+C:\Program Files (x86)\BlueJ\lib\bluejcore.jar;C:\Program Files (x86)\BlueJ\lib\junit-4.8.2.jar;C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80
+-d
+C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc
+-encoding
+UTF-8
+-charset
+UTF-8
+-docletpath
+C:\Program Files (x86)\BlueJ\lib\bjdoclet.jar
+-doclet
+bluej.doclet.doclets.formats.html.HtmlDoclet
+C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\src\cpu\Z80Core.java
+<---- end of javadoc command ---->
+Loading source file C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\src\cpu\Z80Core.java...
+Constructing Javadoc information...
+Standard Doclet version 1.7.0_51
+Building tree for all the packages and classes...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\src\cpu\Z80Core.html...
+C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\src\cpu\Z80Core.java:160: warning - Tag @link: missing '#': "runResetProcess()"
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\src\cpu\package-frame.html...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\src\cpu\package-summary.html...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\constant-values.html...
+Building index for all the packages and classes...
+Building index for all classes...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\allclasses-frame.html...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\allclasses-noframe.html...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\index.html...
+Generating C:\Users\Brendan\Desktop\Java Apps\Vizu-80\Vizu-80\doc\stylesheet.css...
+1 warning

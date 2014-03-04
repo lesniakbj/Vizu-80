@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=
+comment0.target=void\ resetCPU()
+comment1.params=
+comment1.target=void\ executeInstruction()
+comment2.params=
+comment2.target=boolean\ isHalted()
+comment3.params=
+comment3.target=long\ getStates()
+comment4.params=
+comment4.target=void\ resetStates()
+numComments=5

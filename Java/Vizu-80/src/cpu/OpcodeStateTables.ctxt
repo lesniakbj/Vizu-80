@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=opcode
+comment0.target=byte\ getOpcodeTState(int)
+comment1.params=opcode
+comment1.target=byte\ getOpcodeCBState(int)
+comment2.params=opcode
+comment2.target=byte\ getOpcodeDDFDState(int)
+comment3.params=opcode
+comment3.target=byte\ getOpcodeEDState(int)
+comment4.params=opcode
+comment4.target=byte\ getOpcodeIndexedState(int)
+numComments=5
