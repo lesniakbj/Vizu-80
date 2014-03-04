@@ -1,7 +1,7 @@
 Vizu-80 - The Visual ZiLOG z80 Emulator
 =======================================
 
-PROJECT TITLE: Vizu-80 - The Visual ZiLOG z80 Emulator   
+<u>PROJECT TITLE:</u> Vizu-80 - The Visual ZiLOG z80 Emulator   
 
 PURPOSE OF PROJECT: To visually teach students the internal workings of a simple CPU, allowing them to step through each part of the instruction pipline.   
 
