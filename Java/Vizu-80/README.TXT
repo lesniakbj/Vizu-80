@@ -1,12 +1,6 @@
-------------------------------------------------------------------------
-This is the project README file. Here, you should describe your project.
-Tell the reader (someone who does not know anything about this project)
-all he/she needs to know. The comments should usually include at least:
-------------------------------------------------------------------------
-
-PROJECT TITLE:
-PURPOSE OF PROJECT:
-VERSION or DATE:
-HOW TO START THIS PROJECT:
-AUTHORS:
+PROJECT TITLE: Vizu-80 - The Visual ZiLOG z80 Emulator
+PURPOSE OF PROJECT: To visually teach students the internal workings of a simple CPU, allowing them to step through each part of the instruction pipline.
+VERSION or DATE: 0.0.a
+HOW TO START THIS PROJECT: Run the main() method in the EmulationGUI Class
+AUTHORS: Brendan Lesniak
 USER INSTRUCTIONS:
