@@ -65,6 +65,7 @@ public class Vizu80GUI
     
     // Timer to update CPU Status & Animation Status Texts (all JLabels...?)
     private static Timer updateTimer;
+    private static GridBagConstraints con;
     
     /* --------- END EXTRA IMPORTS --------- */
     
@@ -123,7 +124,6 @@ public class Vizu80GUI
         JFrame.setDefaultLookAndFeelDecorated(true);
         mainFrame = new JFrame(PROJECT_TITLE);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //mainFrame.setBorder(new LineBorder(COLOR_FRAME_BORDER));
         
         ActionListener updateLabels = new ActionListener()
         {
@@ -140,7 +140,8 @@ public class Vizu80GUI
         addMenuComponents(mainFrame);
         addStatusBarComponents(mainFrame);
         addContentPanel(mainFrame);
-        addPanelTitles();
+        initializeContentPanels();
+        
         
         mainFrame.pack();
         mainFrame.setResizable(false);
@@ -166,7 +167,7 @@ public class Vizu80GUI
         {
             public void actionPerformed(ActionEvent e)
             {
-                
+                // About Pop-Up
             }
         });
         
@@ -192,6 +193,13 @@ public class Vizu80GUI
         
         settingsItem = new JMenuItem("Settings"); 
         settingsItem.setBackground(COLOR_MENU_BAR);
+        settingsItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                // new OptionsFrame / Panel (Tabbed Pane)
+            }
+        });
         
         optionsMenu.add(settingsItem);
                
@@ -231,44 +239,44 @@ public class Vizu80GUI
         contentPanel.setBorder(new EmptyBorder(FRAME_MARGIN, FRAME_MARGIN, FRAME_MARGIN, FRAME_MARGIN));
         
         contentPanel.setLayout(new GridBagLayout());
-        GridBagConstraints con = new GridBagConstraints();
-        addSplitPanels(contentPanel, con);
+        con = new GridBagConstraints();
+        addSplitPanels(contentPanel);
         
         theFrame.add(contentPanel, BorderLayout.CENTER);
     }
     
-    private static void addSplitPanels(JPanel thePanel, GridBagConstraints c)
+    private static void addSplitPanels(JPanel thePanel)
     {
         animPanel = new JPanel();
         animTitle = new JLabel(ANIMATION_TITLE);        
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0.1;
-        c.weighty = 0.1;
-        c.anchor = GridBagConstraints.PAGE_START;
-        c.ipadx = PANEL_WIDTH;
-        c.ipady = PANEL_HEIGHT;      
-        c.insets = new Insets(5, 5, 5, 5);        
-        thePanel.add(animPanel, c);
+        con.gridx = 0;
+        con.gridy = 0;
+        con.weightx = 0.1;
+        con.weighty = 0.1;
+        con.anchor = GridBagConstraints.PAGE_START;
+        con.ipadx = PANEL_WIDTH;
+        con.ipady = PANEL_HEIGHT;      
+        con.insets = new Insets(5, 5, 5, 5);        
+        thePanel.add(animPanel, con);
         
         cpuPanel = new JPanel();
         cpuTitle = new JLabel(INTERNALS_TITLE);        
-        c.gridx = 1;
-        c.gridy = 0;
-        thePanel.add(cpuPanel, c);
+        con.gridx = 1;
+        con.gridy = 0;
+        thePanel.add(cpuPanel, con);
         
         animPanelExtra = new JPanel();
         animExtraTitle = new JLabel(OPCODE_TITLE);        
-        c.gridx = 0;
-        c.gridy = 1;
-        c.ipady = SUB_PANEL_HEIGHT;               
-        thePanel.add(animPanelExtra, c);
+        con.gridx = 0;
+        con.gridy = 1;
+        con.ipady = SUB_PANEL_HEIGHT;               
+        thePanel.add(animPanelExtra, con);
         
         cpuPanelExtra = new JPanel();
         cpuExtraTitle = new JLabel(MEMORY_TITLE);        
-        c.gridx = 1;
-        c.gridy = 1;        
-        thePanel.add(cpuPanelExtra, c);        
+        con.gridx = 1;
+        con.gridy = 1;        
+        thePanel.add(cpuPanelExtra, con);        
     }
     
     private static void addPanelTitles()
@@ -281,17 +289,46 @@ public class Vizu80GUI
     
     private static void insertTitle(JPanel thePanel, JLabel theTitle)
     {
-        thePanel.setLayout(new BorderLayout());
         thePanel.setBackground(COLOR_PANEL_BACKGROUND);
         thePanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        
+        thePanel.setLayout(new BorderLayout());
+        thePanel.setOpaque(true);
         
         theTitle.setFont(TITLE_FONT);
-        theTitle.setHorizontalAlignment(JLabel.CENTER);        
+        theTitle.setHorizontalAlignment(JLabel.CENTER); 
         
-        thePanel.setOpaque(true);
         thePanel.add(theTitle, BorderLayout.NORTH);
-
+        
+        
+        /*
+        if(theTitle.getText().equals(ANIMATION_TITLE))
+        {
+            thePanel.setLayout(new GridBagLayout());
+            con.gridx = 0;
+            con.gridy = 0;
+            con.weightx = 0.1;
+            con.weighty = 0.1;
+            con.anchor = GridBagConstraints.PAGE_START;
+            
+        }
+        else
+        {
+            
+        }
+        */       
+    }
+    
+    private static void initializeContentPanels()
+    {
+        addPanelTitles();
+        addPanelContent();
+    }
+    
+    private static void addPanelContent()
+    {
+        JPanel theNewPanel = new JPanel();
+        theNewPanel.setBackground(new Color(15, 220, 15));
+        animPanel.add(theNewPanel, BorderLayout.CENTER);
     }
     
     private static void shutdown()
