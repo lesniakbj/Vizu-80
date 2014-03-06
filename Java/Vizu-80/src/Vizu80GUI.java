@@ -9,6 +9,7 @@ import javax.swing.UIManager;
 import javax.swing.Timer;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 
@@ -38,6 +39,7 @@ public class Vizu80GUI
     private static final String OPCODE_TITLE = "Opcode Interpreter:";
     private static final String INTERNALS_TITLE = "CPU Internal State:";
     private static final String MEMORY_TITLE = "System RAM State:";
+    private static final String CONTROL_TITLE = "Emulation Control:";
     
     /* --------- STATIC-FINAL INTEGERS --------- */
     private static final int CONTENT_WIDTH = 1280;  // Pixels
@@ -49,6 +51,7 @@ public class Vizu80GUI
     private static final int PANEL_WIDTH = CONTENT_WIDTH / 2; // Pixels
     private static final int PANEL_HEIGHT = (CONTENT_HEIGHT / 4) * 3; // Pixels
     private static final int SUB_PANEL_HEIGHT = (CONTENT_HEIGHT / 4); // Pixels
+    private static final int CONTROL_HEIGHT = 125; // Pixels
     
     /* --------- STATIC-FINAL COLORS --------- */
     private static final Color COLOR_MENU_BAR = new Color(242, 238, 230);
@@ -56,7 +59,8 @@ public class Vizu80GUI
     private static final Color COLOR_CONTENT_BACKGROUND = new Color(232, 228, 220);
     private static final Color COLOR_PANEL_BACKGROUND = new Color(232, 228, 220);
     
-    private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 16);  
+    private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 18);
+    private static final Font SUB_TITLE_FONT = new Font("Tahoma", Font.PLAIN, 14);
     
     /* --------- END STATIC-FINAL MEMBERS --------- */
     
@@ -74,28 +78,30 @@ public class Vizu80GUI
     // Top of the GUI Scene Graph / Tree
     private static JFrame mainFrame;
     
-    // JMenu, first component inserted into the frame
     // Within the 1st layer of the Scene Graph
     private static BackgroundMenuBar menuBar;
     private static JMenu fileMenu, optionsMenu;
     private static JMenuItem aboutItem, exitItem, settingsItem;
     
-    // JStatusBar, second component added into the frame
     // Also within the 1st layer of the Scene Graph
     private static JStatusBar statusBar;
     private static JLabel messageLabel, animationStatusLabel,cpuStatusLabel;
     
-    // Main Content Container - JPanel ... Will display all controls and GUI components
+    // Main Content Container
     // Final component of the 1st layer of the Scene Graph
     private static JPanel contentPanel;
-    
+        
     // CPU / Animation Status Panel - Panel of the GUI, shows current status of CPU components / Animation
     // 2nd layer of the Scene Graph - Under contentPanel
     private static JPanel cpuPanel, animPanel, cpuPanelExtra, animPanelExtra;
     
-    // Title Labels for each of the Status Panels and Sub Panels.
+    
     // Within the 3rd layer of the Scene Graph - One into the respective containers
-    private static JLabel cpuTitle, animTitle, cpuExtraTitle, animExtraTitle;
+    private static JLabel animTitle, cpuTitle, cpuExtraTitle, animExtraTitle;
+    private static JPanel animContentPanel, animSubPanel;
+    
+    // 4th Layer of the Scene Graph
+    private static JLabel animSubTitle;
     
     /* --------- END GUI COMPONENTS --------- */
     
@@ -281,20 +287,20 @@ public class Vizu80GUI
     
     private static void addPanelTitles()
     {             
-        insertTitle(animPanel, animTitle);  
-        insertTitle(cpuPanel, cpuTitle);
-        insertTitle(animPanelExtra, animExtraTitle);
-        insertTitle(cpuPanelExtra, cpuExtraTitle);
+        insertTitle(animPanel, animTitle, COLOR_PANEL_BACKGROUND, new BevelBorder(BevelBorder.LOWERED), TITLE_FONT);  
+        insertTitle(cpuPanel, cpuTitle, COLOR_PANEL_BACKGROUND,  new BevelBorder(BevelBorder.LOWERED), TITLE_FONT);
+        insertTitle(animPanelExtra, animExtraTitle, COLOR_PANEL_BACKGROUND,  new BevelBorder(BevelBorder.LOWERED), TITLE_FONT);
+        insertTitle(cpuPanelExtra, cpuExtraTitle, COLOR_PANEL_BACKGROUND,  new BevelBorder(BevelBorder.LOWERED), TITLE_FONT);
     }
     
-    private static void insertTitle(JPanel thePanel, JLabel theTitle)
+    private static void insertTitle(JPanel thePanel, JLabel theTitle, Color bg, Border bord, Font font)
     {
-        thePanel.setBackground(COLOR_PANEL_BACKGROUND);
-        thePanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        thePanel.setBackground(bg);
+        thePanel.setBorder(bord);
         thePanel.setLayout(new BorderLayout());
         thePanel.setOpaque(true);
         
-        theTitle.setFont(TITLE_FONT);
+        theTitle.setFont(font);
         theTitle.setHorizontalAlignment(JLabel.CENTER); 
         
         thePanel.add(theTitle, BorderLayout.NORTH);
@@ -326,9 +332,16 @@ public class Vizu80GUI
     
     private static void addPanelContent()
     {
-        JPanel theNewPanel = new JPanel();
-        theNewPanel.setBackground(new Color(15, 220, 15));
-        animPanel.add(theNewPanel, BorderLayout.CENTER);
+        animContentPanel = new JPanel();
+        animContentPanel.setBackground(COLOR_PANEL_BACKGROUND);
+        animPanel.add(animContentPanel, BorderLayout.CENTER);
+        
+        animSubPanel = new JPanel();
+        animSubTitle = new JLabel(CONTROL_TITLE);
+        animSubPanel.setPreferredSize(new Dimension(animPanel.getWidth(), CONTROL_HEIGHT));
+        insertTitle(animSubPanel, animSubTitle, COLOR_PANEL_BACKGROUND, new BevelBorder(BevelBorder.LOWERED), SUB_TITLE_FONT);
+        
+        animPanel.add(animSubPanel, BorderLayout.SOUTH);
     }
     
     private static void shutdown()
