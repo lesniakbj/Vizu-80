@@ -12,14 +12,16 @@ public class SeparatorPanel extends JPanel {
     protected Color leftColor;
     protected Color rightColor;
 
-    public SeparatorPanel(Color leftColor, Color rightColor) {
+    public SeparatorPanel(Color leftColor, Color rightColor) 
+    {
         this.leftColor = leftColor;
         this.rightColor = rightColor;
         setOpaque(false);
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) 
+    {
         g.setColor(leftColor);
         g.drawLine(0, 0, 0, getHeight());
         g.setColor(rightColor);

@@ -14,4 +14,17 @@ public class DrawingUtils
         string.addAttribute(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
         return string;
     }
+    
+    public static String pad(String toPad, int totalLength)
+    {
+        if(toPad.length() >= totalLength)
+            return toPad;
+        
+        String str = toPad;
+        
+        while(str.length() < totalLength)
+            str += " ";
+        
+        return str;
+    }
 }

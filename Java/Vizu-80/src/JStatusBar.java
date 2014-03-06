@@ -8,6 +8,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 public class JStatusBar extends JPanel {
 
@@ -15,14 +16,22 @@ public class JStatusBar extends JPanel {
 
     protected JPanel leftPanel;
     protected JPanel rightPanel;
+    
+    private static int HEIGHT;
+    private static Color COLOR;
 
-    public JStatusBar() {
+    public JStatusBar(int height, Color color) 
+    {
+        HEIGHT = height;
+        COLOR = color;
         createPartControl();
+        setBackground(COLOR);
     }
 
-    protected void createPartControl() {    
+    protected void createPartControl() 
+    {    
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(getWidth(), 23));
+        setPreferredSize(new Dimension(getWidth(), HEIGHT));
 
         leftPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 3));
         leftPanel.setOpaque(false);
@@ -33,19 +42,23 @@ public class JStatusBar extends JPanel {
         add(rightPanel, BorderLayout.EAST);
     }
 
-    public void setLeftComponent(JComponent component) {
+    public void setLeftComponent(JComponent component) 
+    {
         leftPanel.add(component);
     }
 
-    public void addRightComponent(JComponent component) {
+    public void addRightComponent(JComponent component) 
+    {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
-        panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        SeparatorPanel sep = new SeparatorPanel(Color.GRAY, Color.WHITE);
+        panel.add(sep);
         panel.add(component);
         rightPanel.add(panel);
     }
-
+    
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) 
+    {
         super.paintComponent(g);
 
         int y = 0;
@@ -77,5 +90,4 @@ public class JStatusBar extends JPanel {
         g.setColor(new Color(221, 221, 220));
         g.drawLine(0, y, getWidth(), y);
     }
-
 }
