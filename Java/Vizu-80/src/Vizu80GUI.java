@@ -116,6 +116,8 @@ public class Vizu80GUI
     private static GridBagConstraints con;
     private static ImageFilter theFilter;
     private static DataController cpuController;
+    private static DataPack cpuDataPack;
+    private static int[] cpuRegisterData, cpuOtherData;
     private static volatile boolean isRunning;
     private static volatile boolean started;
     
@@ -190,6 +192,7 @@ public class Vizu80GUI
         JFrame.setDefaultLookAndFeelDecorated(true);
         mainFrame = new JFrame(PROJECT_TITLE);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        cpuController = new DataController();
         
         ActionListener updateLabels = new ActionListener()
         {
@@ -199,6 +202,17 @@ public class Vizu80GUI
                 {
                     animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Initialization done!");
                     cpuStatusLabel.setText(CPU_STATUS_MESSAGE + "Initialization done!");
+                }
+                else
+                {                    
+                    if(isRunning)
+                    {
+                        cpuDataPack = cpuController.nextStep();
+                        cpuRegisterData = cpuDataPack.getRegisterData();
+                        cpuOtherData = cpuDataPack.getOtherData();
+                    
+                        updateRegisterLabels();
+                    }
                 }
                 
                 started = true;
@@ -944,6 +958,29 @@ public class Vizu80GUI
                 messageLabel.setText(ABOUT_BACK);
             }            
         });
+    }
+    
+    private static void updateRegisterLabels()
+    {
+        // NORMAL REGISTERS
+        registersContent[0].setText(Utils.toHex(cpuRegisterData[0])); // CPU REG DATA: A BC DE HL F
+        registersContent[1].setText(Utils.toHex(cpuRegisterData[7])); // regCont[1] == F
+        registersContent[2].setText(Utils.toHex(cpuRegisterData[1])); 
+        registersContent[3].setText(Utils.toHex(cpuRegisterData[2]));
+        registersContent[4].setText(Utils.toHex(cpuRegisterData[3])); 
+        registersContent[5].setText(Utils.toHex(cpuRegisterData[4]));
+        registersContent[6].setText(Utils.toHex(cpuRegisterData[5])); 
+        registersContent[7].setText(Utils.toHex(cpuRegisterData[6]));
+        
+        // OTHER REGISTERS
+        registersContent[8].setText(Utils.toHex(cpuRegisterData[8]));
+        registersContent[9].setText(Utils.toHex(cpuRegisterData[15]));
+        registersContent[10].setText(Utils.toHex(cpuRegisterData[9]));
+        registersContent[11].setText(Utils.toHex(cpuRegisterData[10]));
+        registersContent[12].setText(Utils.toHex(cpuRegisterData[11]));
+        registersContent[13].setText(Utils.toHex(cpuRegisterData[12]));
+        registersContent[14].setText(Utils.toHex(cpuRegisterData[13]));
+        registersContent[15].setText(Utils.toHex(cpuRegisterData[14]));
     }
     
     private static void shutdown()

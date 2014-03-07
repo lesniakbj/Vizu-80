@@ -4,7 +4,7 @@ import java.text.AttributedString;
 
 import java.awt.font.TextAttribute;
 
-public class DrawingUtils
+public class Utils
 {
     public static AttributedString underline(String str)
     {
@@ -30,6 +30,15 @@ public class DrawingUtils
     
     public static String toHex(int convert)
     {
-        return Integer.toHexString(convert);
+        if(convert <= 16)
+            return "0x0" + Integer.toHexString(convert);
+        else
+            return "0x" + Integer.toHexString(convert).toUpperCase();
+    }
+    
+    public static void printArray(int[] theArray)
+    {
+        for(int i = 0; i < theArray.length; i++)
+            System.out.println(toHex(theArray[i]));    
     }
 }

@@ -9,17 +9,24 @@ import java.util.ArrayList;
  */
 public class DataPack
 {
-    private ArrayList<Integer> theData;
+    private int[] theRegisterData; // A BC DE HL F
+    private int[] othersData; // IX IY PC SP IR RR IDK
     
+    // [TO-DO]: ADD OTHER DATA TYPES THAT ARE SENT TO THE CONTROLLER... AKA OpCodes, Memory, etc...
     
-    
-    public int[] getData()
+    public DataPack(int[] regData, int[] otherData)
     {
-        int[] data = new int[theData.size()];
-        
-        for(int i = 0; i < theData.size(); i++)
-            data[i] = theData.get(i);
-            
-        return data;
+        theRegisterData = regData;
+        othersData = otherData;
+    }
+    
+    public int[] getRegisterData()
+    {
+        return theRegisterData;
+    }
+    
+    public int[] getOtherData()
+    {
+        return othersData;
     }
 }

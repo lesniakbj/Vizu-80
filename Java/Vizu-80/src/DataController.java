@@ -2,6 +2,9 @@ package src;
 
 import src.cpu.Z80Core;
 import java.util.ArrayList;
+import src.cpu.IMemory;
+import src.cpu.IDevice;
+import src.cpu.CPUException;
 
 /**
  * Contols data coming in from the CPU / Calls CPU methods for updating. <br><br>
@@ -20,19 +23,41 @@ public class DataController
     
     private int currentDataPack;
     
+    private static boolean firstStart;
+    
     public DataController()
     {
-        this(new Z80Core());
+        this(new Z80Core());       
     }
     
     public DataController(Z80Core theCore)
     {
         cpuCore = theCore;
         currentDataPack = 0;
+        dataPacks = new ArrayList<DataPack>(0);
+        firstStart = true;
     }
     
-    public DataPack getDataPack(int packNum)
+    public DataPack nextStep()
     {
-        return dataPacks.get(packNum);
+        if(firstStart)
+        {
+            cpuCore.resetCPU();
+            firstStart = false;
+        }
+        
+        
+        try
+        {
+            cpuCore.executeInstruction();
+            dataPacks.add(cpuCore.getDataPack());
+        }
+        catch(CPUException e)
+        {
+            System.out.println(e);
+        }
+        
+        System.out.println(dataPacks.size());
+        return cpuCore.getDataPack();
     }
 }

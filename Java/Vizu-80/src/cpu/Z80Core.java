@@ -1,5 +1,7 @@
 package src.cpu;
 
+import src.DataPack;
+
 /*
  * 
  * VERSION 0.1.a MILESTONES:
@@ -37,7 +39,7 @@ public class Z80Core implements ICPU
     // [TO-DO]: Externalize, create a dedicated registers object
     private int[]           registers; // A, B, C, D, E, H, L, F
     private int[]           ghostRegisters; // A', B', C', D', E', H', L', F'
-    private int             indexRegister_1,indexRegister_2, programCounter, stackPointer;
+    private int             indexRegister_1, indexRegister_2, programCounter, stackPointer;
     private int             interruptRegister, refreshRegister;
     private int             indexer;
     
@@ -90,6 +92,9 @@ public class Z80Core implements ICPU
         systemIO = device;
         states = 0;
         
+        registers = new int[8];
+        ghostRegisters = new int[8];
+        
         blocked = false;
         isReset = false;
         resetAddress = 0x0000;
@@ -126,11 +131,11 @@ public class Z80Core implements ICPU
                 maskingInterrupts = false; // Interrupt has been accepted by the CPU
                 interrupt_2 = interrupt_1; // Store current interrupt state in #2
                 //decrementStackPointer_2();
-                systemRAM.writeWord(stackPointer, programCounter);
+                //systemRAM.writeWord(stackPointer, programCounter);
                 programCounter = 0x0066;
             }
             
-            currentOpcode = systemRAM.readByte(programCounter);
+            //currentOpcode = systemRAM.readByte(programCounter);
             //incrementProgramCounter();
             
             try
@@ -147,8 +152,10 @@ public class Z80Core implements ICPU
             {
                 isReset = false;
                 resetCPU();
-            }
+            }            
         }
+        
+        programCounter = 0x0066;
     }
     
     /**
@@ -356,7 +363,7 @@ public class Z80Core implements ICPU
             ghostRegisters[i] = 0;
         
         // Reset all Index and Stack Pointers back to their intial states
-        indexRegister_1 =indexRegister_2 = stackPointer = 0;
+        indexRegister_1 = indexRegister_2 = stackPointer = 0;
         
         // Reset Interrupt and Refresh registers to their initial states
         interruptRegister = refreshRegister = 0;
@@ -383,5 +390,39 @@ public class Z80Core implements ICPU
     private void decodeOpcode(int opcode) throws CPUException
     {
         states = states + OpcodeStateTables.getOpcodeTState(opcode);
+    }
+    
+    public DataPack getDataPack()
+    {
+        int[] sendRegData = new int[16]; // A BC DE HL F     x 2
+        int[] sendOtherData = new int[7]; // IX IY PC SP IR RR IDX
+        
+        sendRegData[0] = registers[0];
+        sendRegData[1] = registers[1];
+        sendRegData[2] = registers[2];
+        sendRegData[3] = registers[3];
+        sendRegData[4] = registers[4];
+        sendRegData[5] = registers[5];
+        sendRegData[6] = registers[6];
+        sendRegData[7] = registers[7];
+        sendRegData[8] = ghostRegisters[0];
+        sendRegData[9] = ghostRegisters[1];
+        sendRegData[10] = ghostRegisters[2];
+        sendRegData[11] = ghostRegisters[3];
+        sendRegData[12] = ghostRegisters[4];
+        sendRegData[13] = ghostRegisters[5];
+        sendRegData[14] = ghostRegisters[6];
+        sendRegData[15] = ghostRegisters[7];
+        
+        
+        sendOtherData[0] = indexRegister_1;
+        sendOtherData[1] = indexRegister_2;
+        sendOtherData[2] = programCounter;
+        sendOtherData[3] = stackPointer;
+        sendOtherData[4] = interruptRegister;
+        sendOtherData[5] = refreshRegister;
+        sendOtherData[6] = indexer;
+        
+        return new DataPack(sendRegData, sendOtherData);
     }
 }
