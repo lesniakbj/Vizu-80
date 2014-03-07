@@ -28,17 +28,41 @@ public class Utils
         return str;
     }
     
-    public static String toHex(int convert)
+    public static String toHex(int convert, boolean pad)
     {
-        if(convert <= 16)
-            return "0x0" + Integer.toHexString(convert);
+        String str = "";
+        if(pad)
+        {
+            if(convert <= 16)
+                str += "0x0" + Integer.toHexString(convert).toUpperCase();
+            else
+                str += "0x" + Integer.toHexString(convert).toUpperCase();
+        }
         else
-            return "0x" + Integer.toHexString(convert).toUpperCase();
+        {
+            return Integer.toHexString(convert).toUpperCase();
+        }
+        
+        return str;
+    }
+    
+    public static String padBinary(String binary, int maxLength)
+    {
+        String str = binary;
+        while(str.length() < maxLength)
+            str = "0" + str;
+         
+        return str;
+    }
+    
+    public static String toBinary(int convert)
+    {
+        return Integer.toBinaryString(Integer.parseInt(toHex(convert, false), 16));
     }
     
     public static void printArray(int[] theArray)
     {
         for(int i = 0; i < theArray.length; i++)
-            System.out.println(toHex(theArray[i]));    
+            System.out.println(toHex(theArray[i], true));    
     }
 }

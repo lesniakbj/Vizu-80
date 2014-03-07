@@ -182,6 +182,7 @@ public class Vizu80GUI
             public void run()
             {
                started = false;
+               isRunning = false;
                createAndShowGUI();
             }
         });
@@ -325,6 +326,9 @@ public class Vizu80GUI
         cpuStatusLabel.setBorder(new EmptyBorder(2, 0, 0, STATUS_PADDING));
         statusBar.addRightComponent(cpuStatusLabel);
         
+        animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Beginning Initialization. . .");
+        cpuStatusLabel.setText(CPU_STATUS_MESSAGE + "Beginning Initialization. . .");
+        
         theFrame.add(statusBar, BorderLayout.SOUTH);
     }
     
@@ -443,8 +447,8 @@ public class Vizu80GUI
     {
         registersLabel = new JLabel[16];
         registersContent = new JLabel[16];
-        flagsBinary = new JLabel("0b00000000");
-        ghostFlagsBinary = new JLabel("0b00000000");
+        flagsBinary = new JLabel("00000000");
+        ghostFlagsBinary = new JLabel("00000000");
         
         int count = 0;
         Insets insets = cpuContentPanel.getInsets();
@@ -457,7 +461,7 @@ public class Vizu80GUI
         registersContent[0] = new JLabel("0x00");
         registersLabel[0].setFont(SUB_TITLE_FONT);
         registersContent[0].setFont(SUB_TITLE_FONT);
-        registersContent[0].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[0].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[0].setHorizontalAlignment(JLabel.CENTER);
 
         sizeLabel = registersLabel[0].getPreferredSize();
@@ -481,11 +485,11 @@ public class Vizu80GUI
         registersContent[1] = new JLabel("0x00");
         registersLabel[1].setFont(SUB_TITLE_FONT);
         registersContent[1].setFont(SUB_TITLE_FONT);
-        registersContent[1].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[1].setHorizontalAlignment(JLabel.CENTER);
                 
         flagsBinary.setFont(SUB_TITLE_FONT);
-        flagsBinary.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        flagsBinary.setBorder(new BevelBorder(BevelBorder.LOWERED));
         flagsBinary.setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[1].getPreferredSize();
@@ -512,7 +516,7 @@ public class Vizu80GUI
         registersContent[2] = new JLabel("0x00");
         registersLabel[2].setFont(SUB_TITLE_FONT);
         registersContent[2].setFont(SUB_TITLE_FONT);
-        registersContent[2].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[2].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[2].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[2].getPreferredSize();
@@ -534,7 +538,7 @@ public class Vizu80GUI
         registersContent[3] = new JLabel("0x00");
         registersLabel[3].setFont(SUB_TITLE_FONT);
         registersContent[3].setFont(SUB_TITLE_FONT);
-        registersContent[3].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[3].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[3].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[3].getPreferredSize();
@@ -557,7 +561,7 @@ public class Vizu80GUI
         registersContent[4] = new JLabel("0x00");
         registersLabel[4].setFont(SUB_TITLE_FONT);
         registersContent[4].setFont(SUB_TITLE_FONT);
-        registersContent[4].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[4].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[4].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[4].getPreferredSize();
@@ -580,7 +584,7 @@ public class Vizu80GUI
         registersContent[5] = new JLabel("0x00");
         registersLabel[5].setFont(SUB_TITLE_FONT);
         registersContent[5].setFont(SUB_TITLE_FONT);
-        registersContent[5].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[5].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[5].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[5].getPreferredSize();
@@ -602,7 +606,7 @@ public class Vizu80GUI
         registersContent[6] = new JLabel("0x00");
         registersLabel[6].setFont(SUB_TITLE_FONT);
         registersContent[6].setFont(SUB_TITLE_FONT);
-        registersContent[6].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[6].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[6].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[6].getPreferredSize();
@@ -624,7 +628,7 @@ public class Vizu80GUI
         registersContent[7] = new JLabel("0x00");
         registersLabel[7].setFont(SUB_TITLE_FONT);
         registersContent[7].setFont(SUB_TITLE_FONT);
-        registersContent[7].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[7].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[7].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[7].getPreferredSize();
@@ -647,7 +651,7 @@ public class Vizu80GUI
         registersContent[8] = new JLabel("0x00");
         registersLabel[8].setFont(SUB_TITLE_FONT);
         registersContent[8].setFont(SUB_TITLE_FONT);
-        registersContent[8].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[8].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[8].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[8].getPreferredSize();
@@ -669,11 +673,11 @@ public class Vizu80GUI
         registersContent[9] = new JLabel("0x00");
         registersLabel[9].setFont(SUB_TITLE_FONT);
         registersContent[9].setFont(SUB_TITLE_FONT);
-        registersContent[9].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[9].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[9].setHorizontalAlignment(JLabel.CENTER);
         
         ghostFlagsBinary.setFont(SUB_TITLE_FONT);
-        ghostFlagsBinary.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        ghostFlagsBinary.setBorder(new BevelBorder(BevelBorder.LOWERED));
         ghostFlagsBinary.setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[9].getPreferredSize();
@@ -700,7 +704,7 @@ public class Vizu80GUI
         registersContent[10] = new JLabel("0x00");
         registersLabel[10].setFont(SUB_TITLE_FONT);
         registersContent[10].setFont(SUB_TITLE_FONT);
-        registersContent[10].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[10].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[10].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[10].getPreferredSize();
@@ -724,7 +728,7 @@ public class Vizu80GUI
         registersContent[11] = new JLabel("0x00");
         registersLabel[11].setFont(SUB_TITLE_FONT);
         registersContent[11].setFont(SUB_TITLE_FONT);
-        registersContent[11].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[11].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[11].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[11].getPreferredSize();
@@ -746,7 +750,7 @@ public class Vizu80GUI
         registersContent[12] = new JLabel("0x00");
         registersLabel[12].setFont(SUB_TITLE_FONT);
         registersContent[12].setFont(SUB_TITLE_FONT);
-        registersContent[12].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[12].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[12].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[12].getPreferredSize();
@@ -769,7 +773,7 @@ public class Vizu80GUI
         registersContent[13] = new JLabel("0x00");
         registersLabel[13].setFont(SUB_TITLE_FONT);
         registersContent[13].setFont(SUB_TITLE_FONT);
-        registersContent[13].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[13].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[13].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[13].getPreferredSize();
@@ -792,7 +796,7 @@ public class Vizu80GUI
         registersContent[14] = new JLabel("0x00");
         registersLabel[14].setFont(SUB_TITLE_FONT);
         registersContent[14].setFont(SUB_TITLE_FONT);
-        registersContent[14].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[14].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[14].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[14].getPreferredSize();
@@ -815,7 +819,7 @@ public class Vizu80GUI
         registersContent[15] = new JLabel("0x00");
         registersLabel[15].setFont(SUB_TITLE_FONT);
         registersContent[15].setFont(SUB_TITLE_FONT);
-        registersContent[15].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        registersContent[15].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[15].setHorizontalAlignment(JLabel.CENTER);
         
         sizeLabel = registersLabel[15].getPreferredSize();
@@ -963,24 +967,28 @@ public class Vizu80GUI
     private static void updateRegisterLabels()
     {
         // NORMAL REGISTERS
-        registersContent[0].setText(Utils.toHex(cpuRegisterData[0])); // CPU REG DATA: A BC DE HL F
-        registersContent[1].setText(Utils.toHex(cpuRegisterData[7])); // regCont[1] == F
-        registersContent[2].setText(Utils.toHex(cpuRegisterData[1])); 
-        registersContent[3].setText(Utils.toHex(cpuRegisterData[2]));
-        registersContent[4].setText(Utils.toHex(cpuRegisterData[3])); 
-        registersContent[5].setText(Utils.toHex(cpuRegisterData[4]));
-        registersContent[6].setText(Utils.toHex(cpuRegisterData[5])); 
-        registersContent[7].setText(Utils.toHex(cpuRegisterData[6]));
+        registersContent[0].setText(Utils.toHex(cpuRegisterData[0], true)); // CPU REG DATA: A BC DE HL F
+        registersContent[1].setText(Utils.toHex(cpuRegisterData[7], true));; // regCont[1] == F
+        registersContent[2].setText(Utils.toHex(cpuRegisterData[1], true)); 
+        registersContent[3].setText(Utils.toHex(cpuRegisterData[2], true));
+        registersContent[4].setText(Utils.toHex(cpuRegisterData[3], true));
+        registersContent[5].setText(Utils.toHex(cpuRegisterData[4], true));
+        registersContent[6].setText(Utils.toHex(cpuRegisterData[5], true));
+        registersContent[7].setText(Utils.toHex(cpuRegisterData[6], true));
+        
+        flagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[7]), 8));
         
         // OTHER REGISTERS
-        registersContent[8].setText(Utils.toHex(cpuRegisterData[8]));
-        registersContent[9].setText(Utils.toHex(cpuRegisterData[15]));
-        registersContent[10].setText(Utils.toHex(cpuRegisterData[9]));
-        registersContent[11].setText(Utils.toHex(cpuRegisterData[10]));
-        registersContent[12].setText(Utils.toHex(cpuRegisterData[11]));
-        registersContent[13].setText(Utils.toHex(cpuRegisterData[12]));
-        registersContent[14].setText(Utils.toHex(cpuRegisterData[13]));
-        registersContent[15].setText(Utils.toHex(cpuRegisterData[14]));
+        registersContent[8].setText(Utils.toHex(cpuRegisterData[8], true));
+        registersContent[9].setText(Utils.toHex(cpuRegisterData[15], true));
+        registersContent[10].setText(Utils.toHex(cpuRegisterData[9], true));
+        registersContent[11].setText(Utils.toHex(cpuRegisterData[10], true));
+        registersContent[12].setText(Utils.toHex(cpuRegisterData[11], true));
+        registersContent[13].setText(Utils.toHex(cpuRegisterData[12], true));
+        registersContent[14].setText(Utils.toHex(cpuRegisterData[13], true));
+        registersContent[15].setText(Utils.toHex(cpuRegisterData[14], true));
+        
+        ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
     }
     
     private static void shutdown()

@@ -114,6 +114,7 @@ public class Z80Core implements ICPU
      * @see src.cpu.IDevice
      * @see src.cpu.CPUException
      */  
+    private static int count = 0;
     public void executeInstruction() throws CPUException
     {
         halted = false;
@@ -154,8 +155,6 @@ public class Z80Core implements ICPU
                 resetCPU();
             }            
         }
-        
-        programCounter = 0x0066;
     }
     
     /**
@@ -357,16 +356,16 @@ public class Z80Core implements ICPU
         
         // Reset all Registers and Ghost Registers back to their initial states
         for(int i = 0; i < registers.length; i++)
-            registers[i] = 0;
+            registers[i] = 0x00;
             
         for(int i = 0; i < ghostRegisters.length; i++)
-            ghostRegisters[i] = 0;
+            ghostRegisters[i] = 0x00;
         
         // Reset all Index and Stack Pointers back to their intial states
-        indexRegister_1 = indexRegister_2 = stackPointer = 0;
+        indexRegister_1 = indexRegister_2 = stackPointer = 0x00;
         
         // Reset Interrupt and Refresh registers to their initial states
-        interruptRegister = refreshRegister = 0;
+        interruptRegister = refreshRegister = 0x00;
         
         // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial states
         interrupt_1 = interrupt_2 = false;
