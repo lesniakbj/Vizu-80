@@ -27,4 +27,9 @@ public class DrawingUtils
         
         return str;
     }
+    
+    public static String toHex(int convert)
+    {
+        return Integer.toHexString(convert);
+    }
 }

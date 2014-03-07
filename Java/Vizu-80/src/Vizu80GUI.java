@@ -115,6 +115,7 @@ public class Vizu80GUI
     private static Timer updateTimer;
     private static GridBagConstraints con;
     private static ImageFilter theFilter;
+    private static DataController cpuController;
     private static volatile boolean isRunning;
     private static volatile boolean started;
     
