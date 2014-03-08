@@ -25,20 +25,26 @@ import java.awt.GridBagConstraints;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Font;
-import java.awt.image.ImageFilter;
-import java.awt.image.RGBImageFilter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Vizu80GUI - The main GUI for the Visual z80 Learning Emulator <br>
+ *      View component of the MVC framework, displays all of the data coming in from the CpuController 
+ * 
+ * @author Brendan Lesniak
+ * @version 0.1.a
+ * @since 0.0.a
+ */
 public class Vizu80GUI
 {    
     /* 
-     * ****************************************
-     * Static Final Strings - Descriptions, Titles, Phrases...
-     * ****************************************
+     * ************************************************
+     * Constant strings used throughout the application
+     * ************************************************
      */
     private static final String PROJECT_TITLE = "Vizu-80 - The Visual z80 Learning Emulator";
     private static final String INITIAL_STATUS_MESSAGE = "Hello! Welcome to Vizu-80!";
@@ -55,7 +61,7 @@ public class Vizu80GUI
     private static final String ABOUT_NEXT = "One Step - Executes one step of the instruction pipline.";
     private static final String ABOUT_BACK = "Back Step - Reverses the instruction pipline, one instruction.";
     
-    private static final String[] REGISTER_STRINGS = new String[] {
+    private static final String[] REGISTER_STRINGS = new String[] {     // Array of strings that are used in the register labels
         "Register A:",
         "Register F:",
         "Register B:",
@@ -72,39 +78,46 @@ public class Vizu80GUI
         "Ghost E':",
         "Ghost H':",
         "Ghost L':" };
+        
+    private static final String[] OTHER_DATA_STRINGS = new String[] {   // Array of strings that are used for extra CPU data
+        "Index X:",
+        "Index Y:",
+        "Program Counter:",
+        "Stack Pointer:",
+        "Interrupt Register:",
+        "Refresh Register:",
+        "Indexer:"  };
+        
+    /* 
+     * **************************************************
+     * Heights & Widths of various containers and padding
+     * Timer delay
+     * **************************************************
+     */
+    private static final int CONTENT_WIDTH = 1280;                      // Pixels -- Main Content Panel
+    private static final int CONTENT_HEIGHT = 768;                      // Pixels -- Main Content Panel
+    private static final int FRAME_MARGIN = 10;                         // Pixels -- Margin Main Content Panel
+    private static final int BAR_HEIGHT = 22;                           // Pixels -- StatusBar & MenuBar
+    private static final int STATUS_PADDING = 30;                       // Pixels -- Status Bar right item padding
+    private static final int PANEL_WIDTH = CONTENT_WIDTH / 2;           // Pixels -- Width of inset panel (upper)
+    private static final int PANEL_HEIGHT = (CONTENT_HEIGHT / 4) * 3;   // Pixels -- Height of inset panel (upper)
+    private static final int SUB_PANEL_HEIGHT = (CONTENT_HEIGHT / 4);   // Pixels -- Height of inset panel (lower)
+    private static final int CONTROL_HEIGHT = 125;                      // Pixels -- Height of control panel
+    private static final int LEFT_OFFSET = 20;                          // Pixels -- Left offset for register display items
+    private static final int TOP_OFFSET = 50;                           // Pixels -- Top offset for register display items
+    private static final int UPDATE_SPEED = 2500;                       // Milliseconds  -- CPU Update rate
     
     /* 
-     * ****************************************
-     * Static Final Integers - Heights, Widths, Times...
-     * ****************************************
+     * *********************************************************************
+     * Colors & Fonts used in the GUI themeing -- Similar to a Windows theme
+     * *********************************************************************
      */
-    private static final int CONTENT_WIDTH = 1280; // Pixels
-    private static final int CONTENT_HEIGHT = 768; // Pixels
-    private static final int BAR_HEIGHT = 22; // Pixels
-    private static final int STATUS_PADDING = 30; // Pixels
-    private static final int UPDATE_SPEED = 2500; // Milliseconds ... 2.5 Seconds
-    private static final int FRAME_MARGIN = 10; // Pixels
-    private static final int PANEL_WIDTH = CONTENT_WIDTH / 2; // Pixels
-    private static final int PANEL_HEIGHT = (CONTENT_HEIGHT / 4) * 3; // Pixels
-    private static final int SUB_PANEL_HEIGHT = (CONTENT_HEIGHT / 4); // Pixels
-    private static final int CONTROL_HEIGHT = 125; // Pixels
-    private static final int CONTROL_GAP = 20;
-    private static final int LEFT_OFFSET = 20;
-    private static final int TOP_OFFSET = 50;
-   
-    /* 
-     * ****************************************
-     * Static Final Colors - Colors used for the overall theme
-     * ****************************************
-     */
-    private static final Color COLOR_MENU_BAR = new Color(242, 238, 230);
-    private static final Color COLOR_FRAME_BORDER = new Color(180, 180, 180);
-    private static final Color COLOR_CONTENT_BACKGROUND = new Color(232, 228, 220);
-    private static final Color COLOR_PANEL_BACKGROUND = new Color(232, 228, 220);
+    private static final Color COLOR_MENU_BAR = new Color(242, 238, 230);               // Color for the menu and status bars
+    private static final Color COLOR_PANEL_BACKGROUND = new Color(232, 228, 220);       // Color for the content panels
     
-    private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 20);
-    private static final Font SUB_TITLE_FONT = new Font("Tahoma", Font.PLAIN, 16);
-    private static final Font SUB_FONT = new Font("Tahoma", Font.PLAIN, 14);
+    private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 20);          // Panel title font
+    private static final Font SUB_TITLE_FONT = new Font("Tahoma", Font.PLAIN, 16);      // Register panel content font
+    private static final Font SUB_FONT = new Font("Tahoma", Font.PLAIN, 14);            // Used in frame count
     
 
     
@@ -113,62 +126,53 @@ public class Vizu80GUI
      * Extras - No category, don't belong to GUI components
      * ****************************************
      */
-    private static Timer updateTimer;
-    private static GridBagConstraints con;
-    private static ImageFilter theFilter;
-    private static DataController cpuController;
-    private static DataPack cpuDataPack;
-    private static int[] cpuRegisterData, cpuOtherData;
-    private static volatile boolean isRunning;
-    private static volatile boolean started;
-    private static int dataCount; // How much data has been recieved
-    private static int totalDataCount;
+    private static Timer updateTimer;                       // CPU simulation timer
+    private static GridBagConstraints con;                  // Used to layout items in the GridBagLayout                      
+    private static DataController cpuController;            // Controller component -- controls CPU simulation and data retrival
+    private static DataPack cpuDataPack;                    // Data pack recieved from the CPU Controller     
+    private static int[] cpuRegisterData, cpuOtherData;     // Personal copy of register and other (pointers, counters, etc.) data
+    private static volatile boolean isRunning;              // Is the simulation currently running. . . 
+    private static volatile boolean startUpDone;            // Is the initial start up done. . . 
+    private static int dataCount;                           // Current data frame we are observing
+    private static int totalDataCount;                      // Total number of data frame retrieved
+    
     
     
     /* 
      * ****************************************
      * All GUI Components - Below is the scene graph of components
      * ****************************************
-     */
-    
-    // The main - "High Level" - container, holds all other components
-    // Top of the GUI Scene Graph / Tree
-    private static JFrame mainFrame;
-    
-    // Within the 1st layer of the Scene Graph
-    private static BackgroundMenuBar menuBar;
-    private static JMenu fileMenu, optionsMenu;
-    private static JMenuItem aboutItem, exitItem, settingsItem, updateItem;
-    
-    // Also within the 1st layer of the Scene Graph
-    private static JStatusBar statusBar;
-    private static JLabel messageLabel, animationStatusLabel,cpuStatusLabel;
-    
-    // Main Content Container
-    // Final component of the 1st layer of the Scene Graph
-    private static JPanel contentPanel;
-        
-    // CPU / Animation Status Panel - Panel of the GUI, shows current status of CPU components / Animation
-    // 2nd layer of the Scene Graph - Under contentPanel
-    private static JPanel cpuPanel, animPanel, cpuPanelExtra, animPanelExtra;
+     */    
+    private static JFrame mainFrame;                                                // Main content frame, holds status bars and the main content panel
     
     
-    // Within the 3rd layer of the Scene Graph - One into the respective containers
-    private static JLabel animTitle, cpuTitle, cpuExtraTitle, animExtraTitle;
-    private static JPanel animContentPanel, animControlPanel, cpuContentPanel;   
-    
-    // 5th Layer of the Scene Graph -- Controls / Container
-    private static JLabel animControlTitle;
-    private static JPanel controlContainer;
-    private static JButton controlNext, controlBack, controlPlay;
-    private static ImageIcon nextImage, backImage, playImage;
+    private static BackgroundMenuBar menuBar;                                       // Main menu bar -- Custom background 
+    private static JMenu fileMenu, optionsMenu;                                     // Menu bar options
+    private static JMenuItem aboutItem, exitItem, settingsItem, updateItem;         // Items within the menu bar
     
     
-    // 5th Layer of the Scene Graph -- CPU Dislay Contents
-    private static JLabel[] registersLabel;
-    private static JLabel[] registersContent;
-    private static JLabel flagsBinary, ghostFlagsBinary;
-    private static JLabel frameCountLabel;
+    private static JStatusBar statusBar;                                            // Lower status bar -- Contains messages and statuses
+    private static JLabel messageLabel, animationStatusLabel, cpuStatusLabel;       // All labels associated with the status bar
+    
+
+    private static JPanel contentPanel;                                             // Main content panel, holds all of the other components
+    private static JPanel cpuPanel, animPanel, cpuPanelExtra, animPanelExtra;       // 4 cpu / emulation place holder panels, added to the main panel
+    private static JLabel animTitle, cpuTitle, cpuExtraTitle, animExtraTitle;       // Title labels for each content panel    
+    private static JPanel animContentPanel, cpuContentPanel;                        // Content panels for each place holder
+    
+
+    private static JLabel animControlTitle;                                         // Control panel title label
+    private static JPanel controlContainer, animControlPanel;                       // Control panel place holder and content panel
+    private static JButton controlNext, controlBack, controlPlay;                   // Control buttons
+    private static ImageIcon nextImage, backImage, playImage;                       // Images for the control buttons
+    
+    
+    private static JLabel[] registersLabel;                                         // Array of labels for all of the registers in the CPU
+    private static JLabel[] registersContent;                                       // Array of content for all of the registers in the CPU
+    private static JLabel flagsBinary, ghostFlagsBinary;                            // Label displaying binary representation of the CPU Flags & Flags'
+    private static JLabel[] othersLabel;                                            // Array of labels for all extra data content
+    private static JLabel[] othersContent;                                          // Array of content for all the extra data
+    private static JLabel frameCountLabel;                                          // Label for displaying the current data frame
     
     public static void main(String[] args)
     {
@@ -181,31 +185,53 @@ public class Vizu80GUI
             System.out.println(e);
         }
         
+        /*
+         * Entry point of our GUI, starts the GUI on the Swing Event Dispatch Thread
+         * We haven't started our simulation yet, so set all relevant flags to the false state
+         */
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
-               started = false;
-               isRunning = false;
+               startUpDone = false;     // Start up hasn't finished yet... obviously.
+               isRunning = false;       // Well... we're not quite running yet...
                createAndShowGUI();
             }
         });
     }
     
+    /**
+     * Initializes all GUI and simulation components, the shows the GUI.
+     * 
+     * @since 0.0.a
+     */
     private static void createAndShowGUI()
     {
+        // Initialize the main frame, give it a title, and set some properties
         JFrame.setDefaultLookAndFeelDecorated(true);
         mainFrame = new JFrame(PROJECT_TITLE);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Initialize the CPU controller and the current data frame counts
         cpuController = new DataController();
         dataCount = 0;
         totalDataCount = 0;
         
+        /* ****************
+         * CPU UPDATE CYCLE
+         * ****************
+         * This action listioner, updateLabels, is a timed event that happens based off of UPDATE_SPEED (ie. duration)
+         * Every duration, the update does the following process:
+         *          1) Check to see if we are currently done with start up; if yes... else, set initialization messages
+         *          2) Check to see if the simulation is currently running (determined by the Play/Pause button; if yes...
+         *          3) Run one cycle of the CPU simulation, with the controller retreiving all relevant data
+         *          4) Update all of the labels associated with the data
+         */
         ActionListener updateLabels = new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(!started)
+                if(!startUpDone)
                 {
                     animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Initialization done!");
                     cpuStatusLabel.setText(CPU_STATUS_MESSAGE + "Initialization done!");
@@ -219,49 +245,68 @@ public class Vizu80GUI
                     }
                 }
                 
-                started = true;
+                startUpDone = true;
             }
         };
         
+        // Set up the timer with the delay, and the action above; start the timer
         updateTimer = new Timer(UPDATE_SPEED, updateLabels);
         updateTimer.start();
         
+        // Add and initialize all of the content panels to the main frame
         addMenuComponents(mainFrame);
         addStatusBarComponents(mainFrame);
         addContentPanel(mainFrame);
+        
+        // Initialize the CPU Registers content & layout
         initializeContentPanels();
         
-        isRunning = false;
+        // Pack the frame, and display it to our user in the center of the screen
         mainFrame.pack();
         mainFrame.setResizable(false);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
     
+    /**
+     * Initialize and add all of the menu components and items, and add them to the associated frame
+     * 
+     * @param theFrame
+     *          The frame to add the menu components to
+     * @since 0.0.a
+     */
     private static void addMenuComponents(JFrame theFrame)
     {
+        // Initialize and set various menu bar properties
         menuBar = new BackgroundMenuBar();
         menuBar.setColor(COLOR_MENU_BAR);
         menuBar.setOpaque(true);
         menuBar.setPreferredSize(new Dimension(theFrame.getWidth(), BAR_HEIGHT));
         
+        // Initialize and set various file menu properties 
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
         fileMenu.getAccessibleContext().setAccessibleDescription(FILE_ACCESSIBILITY_STRING);
         fileMenu.setBackground(COLOR_MENU_BAR);
         
+        // Initialize the about item, and set its background color
         aboutItem = new JMenuItem("About");
         aboutItem.setBackground(COLOR_MENU_BAR);
+        
+        // On click, pop up a small display panel about the emulator
         aboutItem.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                // About Pop-Up
+                
             }
         });
         
+        // Initialize the exit item, and set its background color
         exitItem = new JMenuItem("Exit");
         exitItem.setBackground(COLOR_MENU_BAR);
+        
+        // On click, pop up a warning (confirming exit). Exit if it is confirmed.
         exitItem.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -274,25 +319,33 @@ public class Vizu80GUI
             }
         });
         
+        // Add the about and exit item to the file menu
         fileMenu.add(aboutItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
         
+        // Initialize and set various file menu properties 
         optionsMenu = new JMenu("Options");
         optionsMenu.setBackground(COLOR_MENU_BAR);
         
+        // Initialize the settings item, and set its background color
         settingsItem = new JMenuItem("Settings");
         settingsItem.setBackground(COLOR_MENU_BAR);
+        
+        // On click, pop up an OptionsFrame / Tabbed Pane of options
         settingsItem.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                // new OptionsFrame / Panel (Tabbed Pane)
+                
             }
         });
         
+        // Initialize the update item, and set its background color
         updateItem = new JMenuItem("Check for Updates...");
         updateItem.setBackground(COLOR_MENU_BAR);
+        
+        // On click, create a background thread to check for updates to this GUI / Emulator
         updateItem.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -301,13 +354,16 @@ public class Vizu80GUI
             }
         });
         
+        // Add the settings and update item to the options menu
         optionsMenu.add(settingsItem);
         optionsMenu.addSeparator();
         optionsMenu.add(updateItem);
                
+        // Add both the file and options menu to the menu bar
         menuBar.add(fileMenu);
         menuBar.add(optionsMenu);
         
+        // Add the menu bar to the frame
         theFrame.setJMenuBar(menuBar);
     }
     
@@ -335,11 +391,21 @@ public class Vizu80GUI
         theFrame.add(statusBar, BorderLayout.SOUTH);
     }
     
+        
+    private static void initializeContentPanels()
+    {
+        addPanelTitles();
+        addAnimPanelContent();
+        addCpuPanelContent();
+        addOpcodePanelContent();
+        addMemoryPanelContent();
+    }
+    
     private static void addContentPanel(JFrame theFrame)
     {
         contentPanel = new JPanel();
         contentPanel.setOpaque(true);
-        contentPanel.setBackground(COLOR_CONTENT_BACKGROUND);
+        contentPanel.setBackground(COLOR_PANEL_BACKGROUND);
         contentPanel.setPreferredSize(new Dimension(CONTENT_WIDTH, CONTENT_HEIGHT));
         contentPanel.setBorder(new EmptyBorder(FRAME_MARGIN, FRAME_MARGIN, FRAME_MARGIN, FRAME_MARGIN));
         
@@ -422,15 +488,7 @@ public class Vizu80GUI
         }
         */
     }
-    
-    private static void initializeContentPanels()
-    {
-        addPanelTitles();
-        addAnimPanelContent();
-        addCpuPanelContent();
-        addOpcodePanelContent();
-        addMemoryPanelContent();
-    }
+
     
     private static void addCpuPanelContent()
     {
@@ -450,6 +508,8 @@ public class Vizu80GUI
     {
         registersLabel = new JLabel[16];
         registersContent = new JLabel[16];
+        othersLabel = new JLabel[7];
+        othersContent = new JLabel[7];
         flagsBinary = new JLabel("00000000");
         ghostFlagsBinary = new JLabel("00000000");
         
@@ -662,7 +722,7 @@ public class Vizu80GUI
         cpuContentPanel.add(registersLabel[8]);
         cpuContentPanel.add(registersContent[8]);
         
-        registersLabel[8].setBounds(insets.left + LEFT_OFFSET, registersLabel[6].getY() + registersLabel[6].getHeight() + 100,
+        registersLabel[8].setBounds(insets.left + LEFT_OFFSET, registersLabel[6].getY() + registersLabel[6].getHeight() + 50,
                                         sizeLabel.width, sizeLabel.height);
        
         registersContent[8].setBounds(registersLabel[8].getX() + registersLabel[8].getWidth() + 23,
@@ -846,7 +906,95 @@ public class Vizu80GUI
         
         cpuContentPanel.add(frameCountLabel);
         
-        frameCountLabel.setBounds(0, 550, sizeLabel.width + 50, sizeLabel.height + 10);
+        frameCountLabel.setBounds(0, 0, sizeLabel.width + 50, sizeLabel.height + 10);
+        
+        /*
+         * Adding extra CPU data.... Index X
+         */
+        othersLabel[0] = new JLabel(OTHER_DATA_STRINGS[0]);
+        othersContent[0] = new JLabel("0x0000");
+        othersLabel[0].setFont(SUB_TITLE_FONT);
+        othersLabel[0].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[0].setFont(SUB_TITLE_FONT);
+        othersContent[0].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[0].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[0].getPreferredSize();
+        sizeContent = othersContent[0].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[0]);
+        cpuContentPanel.add(othersContent[0]);
+        
+        othersLabel[0].setBounds(300, 480, sizeLabel.width, sizeLabel.height);
+        othersContent[0].setBounds(othersLabel[0].getX() - 4, othersLabel[0].getY() + othersLabel[0].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
+                                        
+        /*
+         * Adding extra CPU data.... Index Y
+         */
+        othersLabel[1] = new JLabel(OTHER_DATA_STRINGS[1]);
+        othersContent[1] = new JLabel("0x0000");
+        othersLabel[1].setFont(SUB_TITLE_FONT);
+        othersLabel[1].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[1].setFont(SUB_TITLE_FONT);
+        othersContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[1].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[1].getPreferredSize();
+        sizeContent = othersContent[1].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[1]);
+        cpuContentPanel.add(othersContent[1]);
+        
+        othersLabel[1].setBounds(othersLabel[0].getX() + othersLabel[0].getWidth() + 20, 480, 
+                                        sizeLabel.width, sizeLabel.height);
+        othersContent[1].setBounds(othersLabel[1].getX() - 4, othersLabel[1].getY() + othersLabel[1].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
+                                        
+                                        
+        /*
+         * Adding extra CPU data.... Program Counter
+         */
+        othersLabel[2] = new JLabel(OTHER_DATA_STRINGS[2]);
+        othersContent[2] = new JLabel("0x0000");
+        othersLabel[2].setFont(SUB_TITLE_FONT);
+        othersLabel[2].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[2].setFont(SUB_TITLE_FONT);
+        othersContent[2].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[2].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[2].getPreferredSize();
+        sizeContent = othersContent[2].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[2]);
+        cpuContentPanel.add(othersContent[2]);
+        
+        othersLabel[2].setBounds(LEFT_OFFSET, 480, sizeLabel.width, sizeLabel.height);
+        othersContent[2].setBounds(othersLabel[2].getX() + 28, othersLabel[2].getY() + othersLabel[2].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
+         
+                                        
+        /*
+         * Adding extra CPU data.... Stack Pointer
+         */
+        othersLabel[3] = new JLabel(OTHER_DATA_STRINGS[3]);
+        othersContent[3] = new JLabel("0x0000");
+        othersLabel[3].setFont(SUB_TITLE_FONT);
+        othersLabel[3].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[3].setFont(SUB_TITLE_FONT);
+        othersContent[3].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[3].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[3].getPreferredSize();
+        sizeContent = othersContent[3].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[3]);
+        cpuContentPanel.add(othersContent[3]);
+        
+        othersLabel[3].setBounds(othersLabel[2].getX() + othersLabel[2].getWidth() + 25, 480, 
+                                        sizeLabel.width, sizeLabel.height);
+        othersContent[3].setBounds(othersLabel[3].getX() + 14, othersLabel[3].getY() + othersLabel[3].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
                                  
     }
     
@@ -1045,16 +1193,14 @@ public class Vizu80GUI
     private static void updateRegisterLabels()
     {
         // NORMAL REGISTERS
-        registersContent[0].setText(Utils.toHex(cpuRegisterData[0], true)); // CPU REG DATA: A BC DE HL F
-        registersContent[1].setText(Utils.toHex(cpuRegisterData[7], true));; // regCont[1] == F
+        registersContent[0].setText(Utils.toHex(cpuRegisterData[0], true));         // CPU REG DATA: A BC DE HL F
+        registersContent[1].setText(Utils.toHex(cpuRegisterData[7], true));         // regCont[1] == F
         registersContent[2].setText(Utils.toHex(cpuRegisterData[1], true)); 
         registersContent[3].setText(Utils.toHex(cpuRegisterData[2], true));
         registersContent[4].setText(Utils.toHex(cpuRegisterData[3], true));
         registersContent[5].setText(Utils.toHex(cpuRegisterData[4], true));
         registersContent[6].setText(Utils.toHex(cpuRegisterData[5], true));
-        registersContent[7].setText(Utils.toHex(cpuRegisterData[6], true));
-        
-        flagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[7]), 8));
+        registersContent[7].setText(Utils.toHex(cpuRegisterData[6], true));        
         
         // OTHER REGISTERS
         registersContent[8].setText(Utils.toHex(cpuRegisterData[8], true));
@@ -1066,9 +1212,16 @@ public class Vizu80GUI
         registersContent[14].setText(Utils.toHex(cpuRegisterData[13], true));
         registersContent[15].setText(Utils.toHex(cpuRegisterData[14], true));
         
+        flagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[7]), 8));
         ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
         
         frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
+        
+        othersContent[0].setText(Utils.toHex16(cpuOtherData[0], true));
+        othersContent[1].setText(Utils.toHex16(cpuOtherData[1], true));
+        othersContent[2].setText(Utils.toHex16(cpuOtherData[2], true));
+        othersContent[3].setText(Utils.toHex16(cpuOtherData[3], true));
+        
     }
     
     private static void shutdown()

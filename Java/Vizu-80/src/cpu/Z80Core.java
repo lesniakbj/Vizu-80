@@ -71,7 +71,7 @@ public class Z80Core implements ICPU
         
         blocked = false;
         isReset = false;
-        resetAddress = 0x0000;
+        resetAddress = 0x1000;
     }
     
     /**
@@ -114,7 +114,6 @@ public class Z80Core implements ICPU
      * @see src.cpu.IDevice
      * @see src.cpu.CPUException
      */  
-    private static int count = 0;
     public void executeInstruction() throws CPUException
     {
         halted = false;
@@ -154,40 +153,6 @@ public class Z80Core implements ICPU
                 isReset = false;
                 resetCPU();
             }            
-        }
-        
-        /* **************************
-         * TEST TEST TEST TEST
-         * **************************
-         */
-        if(count == 0)
-        {
-            registers[7] = 0xAA;
-            count++;
-        }
-        else
-        {
-            if(count == 1)
-            {
-                registers[7] = 0xBB;
-                count++;
-            }
-            else
-            {
-                if(count == 2)
-                {
-                    registers[7] = 0xCC;
-                    count++;
-                }
-                else
-                {
-                    if(count == 3)
-                    {
-                        registers[7] = 0xDD;
-                        count = 0;   
-                    }
-                }
-            }
         }
     }
     
@@ -396,7 +361,7 @@ public class Z80Core implements ICPU
             ghostRegisters[i] = 0x00;
         
         // Reset all Index and Stack Pointers back to their intial states
-        indexRegister_1 = indexRegister_2 = stackPointer = 0x00;
+        indexRegister_1 = indexRegister_2 = stackPointer = 0x0000;
         
         // Reset Interrupt and Refresh registers to their initial states
         interruptRegister = refreshRegister = 0x00;
