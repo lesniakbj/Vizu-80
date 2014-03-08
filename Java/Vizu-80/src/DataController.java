@@ -93,6 +93,6 @@ public class DataController
     
     public String toString()
     {
-        return "Data Size: " + dataPacks.size() + "/n" + "Rewind Size: " + rewindPacks.size();
+        return "Data Size: " + dataPacks.size() + "\n" + "Rewind Size: " + rewindPacks.size();
     }
 }

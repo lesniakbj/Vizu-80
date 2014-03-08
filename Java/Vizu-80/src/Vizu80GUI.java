@@ -104,6 +104,7 @@ public class Vizu80GUI
     
     private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 20);
     private static final Font SUB_TITLE_FONT = new Font("Tahoma", Font.PLAIN, 16);
+    private static final Font SUB_FONT = new Font("Tahoma", Font.PLAIN, 14);
     
 
     
@@ -167,6 +168,7 @@ public class Vizu80GUI
     private static JLabel[] registersLabel;
     private static JLabel[] registersContent;
     private static JLabel flagsBinary, ghostFlagsBinary;
+    private static JLabel frameCountLabel;
     
     public static void main(String[] args)
     {
@@ -833,6 +835,18 @@ public class Vizu80GUI
        
         registersContent[15].setBounds(registersLabel[15].getX() + registersLabel[15].getWidth() + 25,
                                         registersLabel[15].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
+                                        
+        
+        // Frame Labels
+        frameCountLabel = new JLabel("Frame number: "+ dataCount + "/" + totalDataCount);
+        frameCountLabel.setFont(SUB_FONT);
+        frameCountLabel.setBorder(new EmptyBorder(0, LEFT_OFFSET, 0, 0));
+        
+        sizeLabel = frameCountLabel.getPreferredSize();
+        
+        cpuContentPanel.add(frameCountLabel);
+        
+        frameCountLabel.setBounds(0, 550, sizeLabel.width + 50, sizeLabel.height + 10);
                                  
     }
     
@@ -992,7 +1006,6 @@ public class Vizu80GUI
                         dataCount--;
                     }
                     updateRegisterLabels();
-                    System.out.println(cpuController);
                 }
                 else
                 {
@@ -1006,10 +1019,6 @@ public class Vizu80GUI
                         dataCount--;
                     }
                     updateRegisterLabels();
-                    
-                    System.out.println(totalDataCount);
-                    System.out.println(dataCount);
-                    System.out.println(cpuController);
                 }  
             }
         });
@@ -1017,16 +1026,20 @@ public class Vizu80GUI
     
     private static void runCpu()
     {
-         cpuDataPack = cpuController.nextStep();
-         cpuRegisterData = cpuDataPack.getRegisterData();
-         cpuOtherData = cpuDataPack.getOtherData();
+        
+        cpuDataPack = cpuController.nextStep();
+        cpuRegisterData = cpuDataPack.getRegisterData();
+        cpuOtherData = cpuDataPack.getOtherData();
          
-         totalDataCount++;
-         dataCount++;
-         
-         System.out.println(totalDataCount);
-         System.out.println(dataCount);
-         System.out.println(cpuController);
+        if(dataCount == totalDataCount)
+        {
+            totalDataCount++;
+            dataCount++;
+        }
+        else
+        {
+           dataCount++; 
+        }
     }
     
     private static void updateRegisterLabels()
@@ -1054,6 +1067,8 @@ public class Vizu80GUI
         registersContent[15].setText(Utils.toHex(cpuRegisterData[14], true));
         
         ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
+        
+        frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
     }
     
     private static void shutdown()
