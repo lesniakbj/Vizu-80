@@ -155,6 +155,40 @@ public class Z80Core implements ICPU
                 resetCPU();
             }            
         }
+        
+        /* **************************
+         * TEST TEST TEST TEST
+         * **************************
+         */
+        if(count == 0)
+        {
+            registers[7] = 0xAA;
+            count++;
+        }
+        else
+        {
+            if(count == 1)
+            {
+                registers[7] = 0xBB;
+                count++;
+            }
+            else
+            {
+                if(count == 2)
+                {
+                    registers[7] = 0xCC;
+                    count++;
+                }
+                else
+                {
+                    if(count == 3)
+                    {
+                        registers[7] = 0xDD;
+                        count = 0;   
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -342,10 +376,10 @@ public class Z80Core implements ICPU
     }
     
     /**
-     * Runs the reset process of the CPU. First resets all of the Registers to their initial states, followed
-     * by the 2 Index Registers and Stack Pointers. Resets the Interrupt and Refresh Registers, sets Interrupt
-     * 1 and 2 to their initial states, and stop masking all interrupts. Finally, set the Program Counter to
-     * the saved Reset Address, and set the initial CPU States.
+     * Runs the reset process of the CPU. <li>First resets all of the Registers to their initial states, followed
+     * by the 2 Index Registers and Stack Pointers.</li> <li>Resets the Interrupt and Refresh Registers, sets Interrupt
+     * 1 and 2 to their initial states, and stop masking all interrupts.</li> <li>Finally, set the Program Counter to
+     * the saved Reset Address, and set the initial CPU States.</li>
      * 
      * @since 0.0.a
      */

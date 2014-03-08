@@ -57,6 +57,7 @@ public class DataController
             System.out.println(e);
         }
         
+       // System.out.print(dataPacks.size() + " " );
         return cpuCore.getDataPack();
     }
 }

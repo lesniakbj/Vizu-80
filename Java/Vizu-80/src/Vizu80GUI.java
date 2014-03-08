@@ -208,10 +208,7 @@ public class Vizu80GUI
                 {                    
                     if(isRunning)
                     {
-                        cpuDataPack = cpuController.nextStep();
-                        cpuRegisterData = cpuDataPack.getRegisterData();
-                        cpuOtherData = cpuDataPack.getOtherData();
-                    
+                        runCpu();
                         updateRegisterLabels();
                     }
                 }
@@ -909,9 +906,14 @@ public class Vizu80GUI
          * Play Button Listeners
          * ****************************************
          */
-        controlPlay.addActionListener(new ActionListener()
+        controlPlay.addMouseListener(new MouseAdapter()
         {
-            public void actionPerformed(ActionEvent e)
+            public void  mouseEntered(MouseEvent e)
+            {
+               messageLabel.setText(ABOUT_PLAY);
+            }
+            
+            public void mouseClicked(MouseEvent e)
             {
                 if(isRunning)
                 {
@@ -926,15 +928,7 @@ public class Vizu80GUI
                     //animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "ANIMATION STARTING!");
                     animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Running! . . . Ok!");
                     isRunning = true;
-                }
-            }
-        });
-        
-        controlPlay.addMouseListener(new MouseAdapter()
-        {
-            public void  mouseEntered(MouseEvent e)
-            {
-               messageLabel.setText(ABOUT_PLAY);
+                } 
             }
         });
         
@@ -947,7 +941,24 @@ public class Vizu80GUI
             public void mouseEntered(MouseEvent e)
             {
                 messageLabel.setText(ABOUT_NEXT);
-            }            
+            }     
+            
+            public void mouseClicked(MouseEvent e)
+            {
+                if(isRunning)
+                {
+                    isRunning = false;
+                    animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Step. . .");
+                    runCpu();
+                    updateRegisterLabels();
+                }
+                else
+                {
+                    animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Step. . .");
+                    runCpu();
+                    updateRegisterLabels();
+                }  
+            }
         });
         
         
@@ -962,6 +973,13 @@ public class Vizu80GUI
                 messageLabel.setText(ABOUT_BACK);
             }            
         });
+    }
+    
+    private static void runCpu()
+    {
+         cpuDataPack = cpuController.nextStep();
+         cpuRegisterData = cpuDataPack.getRegisterData();
+         cpuOtherData = cpuDataPack.getOtherData();                   
     }
     
     private static void updateRegisterLabels()
