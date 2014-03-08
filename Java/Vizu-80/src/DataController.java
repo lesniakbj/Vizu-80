@@ -1,7 +1,8 @@
 package src;
 
 import src.cpu.Z80Core;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import src.cpu.IMemory;
 import src.cpu.IDevice;
 import src.cpu.CPUException;
@@ -19,11 +20,13 @@ import src.cpu.CPUException;
 public class DataController
 {
     private Z80Core cpuCore;
-    private ArrayList<DataPack> dataPacks;
+    private Deque<DataPack> dataPacks; 
+    private Deque<DataPack> rewindPacks;
     
-    private int currentDataPack;
+    private int numPacks;
     
     private static boolean firstStart;
+    private static boolean firstClick;
     
     public DataController()
     {
@@ -33,31 +36,63 @@ public class DataController
     public DataController(Z80Core theCore)
     {
         cpuCore = theCore;
-        currentDataPack = 0;
-        dataPacks = new ArrayList<DataPack>(0);
+        numPacks = 0;
+        dataPacks = new ArrayDeque<DataPack>(0);
+        rewindPacks = new ArrayDeque<DataPack>(0);
         firstStart = true;
     }
     
     public DataPack nextStep()
     {
+        DataPack dat = null;
+        
+        if(rewindPacks.size() > 0)
+        {
+            dat = rewindPacks.pop();
+            dataPacks.push(dat);
+            return dat;
+        }
+            
         if(firstStart)
         {
             cpuCore.resetCPU();
             firstStart = false;
-        }
-        
+        }        
         
         try
         {
             cpuCore.executeInstruction();
-            dataPacks.add(cpuCore.getDataPack());
+            dataPacks.push(cpuCore.getDataPack());
+            numPacks++;
         }
         catch(CPUException e)
         {
             System.out.println(e);
         }
         
-       // System.out.print(dataPacks.size() + " " );
+        firstClick = true;
         return cpuCore.getDataPack();
+    }
+    
+    public DataPack backStep()
+    {     
+        DataPack dat = null;
+        
+        if(firstStart)
+            return null;
+        
+        if(dataPacks.peek() != null)
+        {       
+            numPacks--;           
+            dat = dataPacks.pop();
+            rewindPacks.push(dat);
+        }
+            
+        return dat;
+    }
+    
+    public String toString()
+    {
+        return "Data Size: " + dataPacks.size() + "/n" + "Rewind Size: " + rewindPacks.size();
     }
 }

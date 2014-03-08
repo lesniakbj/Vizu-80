@@ -120,6 +120,8 @@ public class Vizu80GUI
     private static int[] cpuRegisterData, cpuOtherData;
     private static volatile boolean isRunning;
     private static volatile boolean started;
+    private static int dataCount; // How much data has been recieved
+    private static int totalDataCount;
     
     
     /* 
@@ -194,6 +196,8 @@ public class Vizu80GUI
         mainFrame = new JFrame(PROJECT_TITLE);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cpuController = new DataController();
+        dataCount = 0;
+        totalDataCount = 0;
         
         ActionListener updateLabels = new ActionListener()
         {
@@ -447,7 +451,6 @@ public class Vizu80GUI
         flagsBinary = new JLabel("00000000");
         ghostFlagsBinary = new JLabel("00000000");
         
-        int count = 0;
         Insets insets = cpuContentPanel.getInsets();
         Dimension sizeLabel, sizeContent, sizeBinary;
         
@@ -972,6 +975,43 @@ public class Vizu80GUI
             {
                 messageLabel.setText(ABOUT_BACK);
             }            
+            
+            public void mouseClicked(MouseEvent e)
+            {
+                if(isRunning)
+                {
+                    isRunning = false;
+                    animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Back Step. . .");
+                    
+                    
+                    cpuDataPack = cpuController.backStep();
+                    if(cpuDataPack != null)
+                    {
+                        cpuRegisterData = cpuDataPack.getRegisterData();
+                        cpuOtherData = cpuDataPack.getOtherData();
+                        dataCount--;
+                    }
+                    updateRegisterLabels();
+                    System.out.println(cpuController);
+                }
+                else
+                {
+                    animationStatusLabel.setText(ANIM_STATUS_MESSAGE + "Back Step. . .");
+                    
+                    cpuDataPack = cpuController.backStep();
+                    if(cpuDataPack != null)
+                    {
+                        cpuRegisterData = cpuDataPack.getRegisterData();
+                        cpuOtherData = cpuDataPack.getOtherData();
+                        dataCount--;
+                    }
+                    updateRegisterLabels();
+                    
+                    System.out.println(totalDataCount);
+                    System.out.println(dataCount);
+                    System.out.println(cpuController);
+                }  
+            }
         });
     }
     
@@ -979,7 +1019,14 @@ public class Vizu80GUI
     {
          cpuDataPack = cpuController.nextStep();
          cpuRegisterData = cpuDataPack.getRegisterData();
-         cpuOtherData = cpuDataPack.getOtherData();                   
+         cpuOtherData = cpuDataPack.getOtherData();
+         
+         totalDataCount++;
+         dataCount++;
+         
+         System.out.println(totalDataCount);
+         System.out.println(dataCount);
+         System.out.println(cpuController);
     }
     
     private static void updateRegisterLabels()
