@@ -103,9 +103,9 @@ public class Vizu80GUI
     private static final int PANEL_HEIGHT = (CONTENT_HEIGHT / 4) * 3;   // Pixels -- Height of inset panel (upper)
     private static final int SUB_PANEL_HEIGHT = (CONTENT_HEIGHT / 4);   // Pixels -- Height of inset panel (lower)
     private static final int CONTROL_HEIGHT = 125;                      // Pixels -- Height of control panel
-    private static final int LEFT_OFFSET = 20;                          // Pixels -- Left offset for register display items
-    private static final int TOP_OFFSET = 50;                           // Pixels -- Top offset for register display items
-    private static final int UPDATE_SPEED = 2500;                       // Milliseconds  -- CPU Update rate
+    private static final int LEFT_OFFSET = 10;                          // Pixels -- Left offset for register display items
+    private static final int TOP_OFFSET = 20;                           // Pixels -- Top offset for register display items
+    private static final int UPDATE_SPEED = 1000;                       // Milliseconds  -- CPU Update rate
     
     /* 
      * *********************************************************************
@@ -117,7 +117,7 @@ public class Vizu80GUI
     
     private static final Font TITLE_FONT = new Font("Tahoma", Font.PLAIN, 20);          // Panel title font
     private static final Font SUB_TITLE_FONT = new Font("Tahoma", Font.PLAIN, 16);      // Register panel content font
-    private static final Font SUB_FONT = new Font("Tahoma", Font.PLAIN, 14);            // Used in frame count
+    private static final Font SUB_FONT = new Font("Tahoma", Font.PLAIN, 12);            // Used in frame count
     
 
     
@@ -895,62 +895,7 @@ public class Vizu80GUI
        
         registersContent[15].setBounds(registersLabel[15].getX() + registersLabel[15].getWidth() + 25,
                                         registersLabel[15].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
-                                        
-        
-        // Frame Labels
-        frameCountLabel = new JLabel("Frame number: "+ dataCount + "/" + totalDataCount);
-        frameCountLabel.setFont(SUB_FONT);
-        frameCountLabel.setBorder(new EmptyBorder(0, LEFT_OFFSET, 0, 0));
-        
-        sizeLabel = frameCountLabel.getPreferredSize();
-        
-        cpuContentPanel.add(frameCountLabel);
-        
-        frameCountLabel.setBounds(0, 0, sizeLabel.width + 50, sizeLabel.height + 10);
-        
-        /*
-         * Adding extra CPU data.... Index X
-         */
-        othersLabel[0] = new JLabel(OTHER_DATA_STRINGS[0]);
-        othersContent[0] = new JLabel("0x0000");
-        othersLabel[0].setFont(SUB_TITLE_FONT);
-        othersLabel[0].setHorizontalAlignment(JLabel.CENTER);
-        othersContent[0].setFont(SUB_TITLE_FONT);
-        othersContent[0].setBorder(new BevelBorder(BevelBorder.LOWERED));
-        othersContent[0].setHorizontalAlignment(JLabel.CENTER);
-        
-        sizeLabel =  othersLabel[0].getPreferredSize();
-        sizeContent = othersContent[0].getPreferredSize();
-        
-        cpuContentPanel.add(othersLabel[0]);
-        cpuContentPanel.add(othersContent[0]);
-        
-        othersLabel[0].setBounds(300, 480, sizeLabel.width, sizeLabel.height);
-        othersContent[0].setBounds(othersLabel[0].getX() - 4, othersLabel[0].getY() + othersLabel[0].getHeight() + 3,
-                                        sizeContent.width + 10 , sizeContent.height + 10);
-                                        
-        /*
-         * Adding extra CPU data.... Index Y
-         */
-        othersLabel[1] = new JLabel(OTHER_DATA_STRINGS[1]);
-        othersContent[1] = new JLabel("0x0000");
-        othersLabel[1].setFont(SUB_TITLE_FONT);
-        othersLabel[1].setHorizontalAlignment(JLabel.CENTER);
-        othersContent[1].setFont(SUB_TITLE_FONT);
-        othersContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
-        othersContent[1].setHorizontalAlignment(JLabel.CENTER);
-        
-        sizeLabel =  othersLabel[1].getPreferredSize();
-        sizeContent = othersContent[1].getPreferredSize();
-        
-        cpuContentPanel.add(othersLabel[1]);
-        cpuContentPanel.add(othersContent[1]);
-        
-        othersLabel[1].setBounds(othersLabel[0].getX() + othersLabel[0].getWidth() + 20, 480, 
-                                        sizeLabel.width, sizeLabel.height);
-        othersContent[1].setBounds(othersLabel[1].getX() - 4, othersLabel[1].getY() + othersLabel[1].getHeight() + 3,
-                                        sizeContent.width + 10 , sizeContent.height + 10);
-                                        
+
                                         
         /*
          * Adding extra CPU data.... Program Counter
@@ -969,7 +914,7 @@ public class Vizu80GUI
         cpuContentPanel.add(othersLabel[2]);
         cpuContentPanel.add(othersContent[2]);
         
-        othersLabel[2].setBounds(LEFT_OFFSET, 480, sizeLabel.width, sizeLabel.height);
+        othersLabel[2].setBounds(LEFT_OFFSET, 435, sizeLabel.width, sizeLabel.height);
         othersContent[2].setBounds(othersLabel[2].getX() + 28, othersLabel[2].getY() + othersLabel[2].getHeight() + 3,
                                         sizeContent.width + 10 , sizeContent.height + 10);
          
@@ -991,11 +936,124 @@ public class Vizu80GUI
         cpuContentPanel.add(othersLabel[3]);
         cpuContentPanel.add(othersContent[3]);
         
-        othersLabel[3].setBounds(othersLabel[2].getX() + othersLabel[2].getWidth() + 25, 480, 
-                                        sizeLabel.width, sizeLabel.height);
-        othersContent[3].setBounds(othersLabel[3].getX() + 14, othersLabel[3].getY() + othersLabel[3].getHeight() + 3,
+        othersLabel[3].setBounds(LEFT_OFFSET + 168, 435, sizeLabel.width, sizeLabel.height);
+        othersContent[3].setBounds(othersLabel[3].getX() + 25, othersLabel[3].getY() + othersLabel[3].getHeight() + 3,
                                         sizeContent.width + 10 , sizeContent.height + 10);
-                                 
+                                        
+                                               
+        
+        /*
+         * Adding extra CPU data.... Index X
+         */
+        othersLabel[0] = new JLabel(OTHER_DATA_STRINGS[0]);
+        othersContent[0] = new JLabel("0x0000");
+        othersLabel[0].setFont(SUB_TITLE_FONT);
+        othersLabel[0].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[0].setFont(SUB_TITLE_FONT);
+        othersContent[0].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[0].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[0].getPreferredSize();
+        sizeContent = othersContent[0].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[0]);
+        cpuContentPanel.add(othersContent[0]);
+        
+        othersLabel[0].setBounds(LEFT_OFFSET + 338, 435, sizeLabel.width, sizeLabel.height);
+        othersContent[0].setBounds(othersLabel[0].getX() - 4, othersLabel[0].getY() + othersLabel[0].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
+                                        
+        /*
+         * Adding extra CPU data.... Index Y
+         */
+        othersLabel[1] = new JLabel(OTHER_DATA_STRINGS[1]);
+        othersContent[1] = new JLabel("0x0000");
+        othersLabel[1].setFont(SUB_TITLE_FONT);
+        othersLabel[1].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[1].setFont(SUB_TITLE_FONT);
+        othersContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[1].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel =  othersLabel[1].getPreferredSize();
+        sizeContent = othersContent[1].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[1]);
+        cpuContentPanel.add(othersContent[1]);
+        
+        othersLabel[1].setBounds(LEFT_OFFSET + 475, 435, sizeLabel.width, sizeLabel.height);
+        othersContent[1].setBounds(othersLabel[1].getX() - 4, othersLabel[1].getY() + othersLabel[1].getHeight() + 3,
+                                        sizeContent.width + 10 , sizeContent.height + 10);
+                                        
+                                        
+        /*
+         * Adding extra CPU data.... Interrupt Register
+         */
+        othersLabel[4] = new JLabel(OTHER_DATA_STRINGS[4]);
+        othersContent[4] = new JLabel("0x00");
+        othersLabel[4].setFont(SUB_TITLE_FONT);
+        othersLabel[4].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[4].setFont(SUB_TITLE_FONT);
+        othersContent[4].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[4].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = othersLabel[4].getPreferredSize();
+        sizeContent = othersContent[4].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[4]);
+        cpuContentPanel.add(othersContent[4]);
+        
+        othersLabel[4].setBounds(LEFT_OFFSET, 510,
+                                        sizeLabel.width, sizeLabel.height);
+        
+        othersContent[4].setBounds(othersLabel[4].getX() + 37, othersLabel[4].getY() + othersLabel[4].getHeight() + 3,
+                                        sizeContent.width + 10, sizeContent.height + 10);      
+                                        
+                                        
+        /*
+         * Adding extra CPU data.... Refresh Register
+         */
+        othersLabel[5] = new JLabel(OTHER_DATA_STRINGS[5]);
+        othersContent[5] = new JLabel("0x00");
+        othersLabel[5].setFont(SUB_TITLE_FONT);
+        othersLabel[5].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[5].setFont(SUB_TITLE_FONT);
+        othersContent[5].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[5].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = othersLabel[5].getPreferredSize();
+        sizeContent = othersContent[5].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[5]);
+        cpuContentPanel.add(othersContent[5]);
+        
+        othersLabel[5].setBounds(LEFT_OFFSET + 170, 510, sizeLabel.width, sizeLabel.height);
+                                        
+        othersContent[5].setBounds(othersLabel[5].getX() + 33, othersLabel[5].getY() + othersLabel[5].getHeight() + 3,
+                                        sizeContent.width + 10, sizeContent.height + 10);
+                                        
+                                        
+        /*
+         * Adding extra CPU data.... Indexer
+         */
+        othersLabel[6] = new JLabel(OTHER_DATA_STRINGS[6]);
+        othersContent[6] = new JLabel("0x00");
+        othersLabel[6].setFont(SUB_TITLE_FONT);
+        othersLabel[6].setHorizontalAlignment(JLabel.CENTER);
+        othersContent[6].setFont(SUB_TITLE_FONT);
+        othersContent[6].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        othersContent[6].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = othersLabel[6].getPreferredSize();
+        sizeContent = othersContent[6].getPreferredSize();
+        
+        cpuContentPanel.add(othersLabel[6]);
+        cpuContentPanel.add(othersContent[6]);
+        
+        othersLabel[6].setBounds(LEFT_OFFSET + 339, 510, sizeLabel.width, sizeLabel.height);
+                                        
+        othersContent[6].setBounds(othersLabel[6].getX() + 5, othersLabel[6].getY() + othersLabel[6].getHeight() + 3,
+                                        sizeContent.width + 10, sizeContent.height + 10);                                
+                                                                                                                                
     }
     
     private static void addMemoryPanelContent()
@@ -1016,6 +1074,8 @@ public class Vizu80GUI
     
     private static void addAnimPanelContent()
     {
+        Dimension sizeLabel;
+        
         animContentPanel = new JPanel();
         animContentPanel.setBackground(COLOR_PANEL_BACKGROUND);
         animPanel.add(animContentPanel, BorderLayout.CENTER);
@@ -1023,6 +1083,19 @@ public class Vizu80GUI
         animControlPanel = new JPanel();
         animControlTitle = new JLabel(CONTROL_TITLE);
         animControlPanel.setPreferredSize(new Dimension(animPanel.getWidth(), CONTROL_HEIGHT));
+        
+                // Frame Labels
+        frameCountLabel = new JLabel("Frame number: "+ dataCount + "/" + totalDataCount);
+        frameCountLabel.setFont(SUB_FONT);
+        frameCountLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        
+        sizeLabel = frameCountLabel.getPreferredSize();
+        
+        animControlPanel.add(frameCountLabel);
+        
+        frameCountLabel.setBounds(10, 2, sizeLabel.width + 50, sizeLabel.height + 5);
+
+                 
         insertTitle(animControlPanel, animControlTitle, COLOR_PANEL_BACKGROUND, new BevelBorder(BevelBorder.LOWERED), SUB_TITLE_FONT);
        
         addControls(animControlPanel);
@@ -1193,35 +1266,37 @@ public class Vizu80GUI
     private static void updateRegisterLabels()
     {
         // NORMAL REGISTERS
-        registersContent[0].setText(Utils.toHex(cpuRegisterData[0], true));         // CPU REG DATA: A BC DE HL F
-        registersContent[1].setText(Utils.toHex(cpuRegisterData[7], true));         // regCont[1] == F
-        registersContent[2].setText(Utils.toHex(cpuRegisterData[1], true)); 
-        registersContent[3].setText(Utils.toHex(cpuRegisterData[2], true));
-        registersContent[4].setText(Utils.toHex(cpuRegisterData[3], true));
-        registersContent[5].setText(Utils.toHex(cpuRegisterData[4], true));
-        registersContent[6].setText(Utils.toHex(cpuRegisterData[5], true));
-        registersContent[7].setText(Utils.toHex(cpuRegisterData[6], true));        
+        registersContent[0].setText(Utils.toHex16(cpuRegisterData[0], true));         // CPU REG DATA: A BC DE HL F
+        registersContent[1].setText(Utils.toHex16(cpuRegisterData[7], true));         // regCont[1] == F
+        registersContent[2].setText(Utils.toHex16(cpuRegisterData[1], true)); 
+        registersContent[3].setText(Utils.toHex16(cpuRegisterData[2], true));
+        registersContent[4].setText(Utils.toHex16(cpuRegisterData[3], true));
+        registersContent[5].setText(Utils.toHex16(cpuRegisterData[4], true));
+        registersContent[6].setText(Utils.toHex16(cpuRegisterData[5], true));
+        registersContent[7].setText(Utils.toHex16(cpuRegisterData[6], true));        
         
         // OTHER REGISTERS
-        registersContent[8].setText(Utils.toHex(cpuRegisterData[8], true));
-        registersContent[9].setText(Utils.toHex(cpuRegisterData[15], true));
-        registersContent[10].setText(Utils.toHex(cpuRegisterData[9], true));
-        registersContent[11].setText(Utils.toHex(cpuRegisterData[10], true));
-        registersContent[12].setText(Utils.toHex(cpuRegisterData[11], true));
-        registersContent[13].setText(Utils.toHex(cpuRegisterData[12], true));
-        registersContent[14].setText(Utils.toHex(cpuRegisterData[13], true));
-        registersContent[15].setText(Utils.toHex(cpuRegisterData[14], true));
+        registersContent[8].setText(Utils.toHex16(cpuRegisterData[8], true));
+        registersContent[9].setText(Utils.toHex16(cpuRegisterData[15], true));
+        registersContent[10].setText(Utils.toHex16(cpuRegisterData[9], true));
+        registersContent[11].setText(Utils.toHex16(cpuRegisterData[10], true));
+        registersContent[12].setText(Utils.toHex16(cpuRegisterData[11], true));
+        registersContent[13].setText(Utils.toHex16(cpuRegisterData[12], true));
+        registersContent[14].setText(Utils.toHex16(cpuRegisterData[13], true));
+        registersContent[15].setText(Utils.toHex16(cpuRegisterData[14], true));
         
         flagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[7]), 8));
         ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
         
         frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
         
-        othersContent[0].setText(Utils.toHex16(cpuOtherData[0], true));
-        othersContent[1].setText(Utils.toHex16(cpuOtherData[1], true));
-        othersContent[2].setText(Utils.toHex16(cpuOtherData[2], true));
-        othersContent[3].setText(Utils.toHex16(cpuOtherData[3], true));
-        
+        othersContent[0].setText(Utils.toHex32(cpuOtherData[0], true));
+        othersContent[1].setText(Utils.toHex32(cpuOtherData[1], true));
+        othersContent[2].setText(Utils.toHex32(cpuOtherData[2], true));
+        othersContent[3].setText(Utils.toHex32(cpuOtherData[3], true));
+        othersContent[4].setText(Utils.toHex16(cpuOtherData[4], true));
+        othersContent[5].setText(Utils.toHex16(cpuOtherData[5], true));
+        othersContent[6].setText(Utils.toHex16(cpuOtherData[6], true));        
     }
     
     private static void shutdown()

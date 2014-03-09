@@ -28,7 +28,7 @@ public class Utils
         return str;
     }
     
-    public static String toHex(int convert, boolean pad)
+    public static String toHex16(int convert, boolean pad)
     {
         String str = "";
         if(pad)
@@ -46,7 +46,7 @@ public class Utils
         return str;
     }
     
-    public static String toHex16(int convert, boolean pad)
+    public static String toHex32(int convert, boolean pad)
     {
         String str = "";
         if(pad)
@@ -85,12 +85,12 @@ public class Utils
     
     public static String toBinary(int convert)
     {
-        return Integer.toBinaryString(Integer.parseInt(toHex(convert, false), 16));
+        return Integer.toBinaryString(Integer.parseInt(toHex16(convert, false), 16));
     }
     
     public static void printArray(int[] theArray)
     {
         for(int i = 0; i < theArray.length; i++)
-            System.out.println(toHex(theArray[i], true));    
+            System.out.println(toHex16(theArray[i], true));    
     }
 }
