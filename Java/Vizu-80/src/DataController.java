@@ -91,6 +91,14 @@ public class DataController
         return dat;
     }
     
+    public DataPack getEmptyPack()
+    {
+        numPacks++;
+        dataPacks.push(DataPack.emptyPack());
+        
+        return DataPack.emptyPack();
+    }
+    
     public String toString()
     {
         return "Data Size: " + dataPacks.size() + "\n" + "Rewind Size: " + rewindPacks.size();

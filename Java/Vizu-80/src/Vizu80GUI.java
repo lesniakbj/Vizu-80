@@ -46,20 +46,20 @@ public class Vizu80GUI
      * Constant strings used throughout the application
      * ************************************************
      */
-    private static final String PROJECT_TITLE = "Vizu-80 - The Visual z80 Learning Emulator";
-    private static final String INITIAL_STATUS_MESSAGE = "Hello! Welcome to Vizu-80!";
-    private static final String FILE_ACCESSIBILITY_STRING = "File Menu -- Learn about or exit the application";
-    private static final String OPTIONS_ACCESSIBILITY_STRING = "Options Menu -- Change options in the application";
-    private static final String ANIM_STATUS_MESSAGE = "Animation Status: ";
-    private static final String CPU_STATUS_MESSAGE = "CPU Status: ";
-    private static final String ANIMATION_TITLE = "CPU Animation:";
-    private static final String OPCODE_TITLE = "Opcode Interpreter:";
-    private static final String INTERNALS_TITLE = "CPU Internal State:";
-    private static final String MEMORY_TITLE = "System RAM State:";
-    private static final String CONTROL_TITLE = "Emulation Control:";
-    private static final String ABOUT_PLAY = "Play / Pause the emulation and related visualizations.";
-    private static final String ABOUT_NEXT = "One Step - Executes one step of the instruction pipline.";
-    private static final String ABOUT_BACK = "Back Step - Reverses the instruction pipline, one instruction.";
+    private static final String PROJECT_TITLE                   = "Vizu-80 - The Visual z80 Learning Emulator";
+    private static final String INITIAL_STATUS_MESSAGE          = "Hello! Welcome to Vizu-80!";
+    private static final String FILE_ACCESSIBILITY_STRING       = "File Menu -- Learn about or exit the application";
+    private static final String OPTIONS_ACCESSIBILITY_STRING    = "Options Menu -- Change options in the application";
+    private static final String ANIM_STATUS_MESSAGE             = "Animation Status: ";
+    private static final String CPU_STATUS_MESSAGE              = "CPU Status: ";
+    private static final String ANIMATION_TITLE                 = "CPU Animation:";
+    private static final String OPCODE_TITLE                    = "Opcode Interpreter:";
+    private static final String INTERNALS_TITLE                 = "CPU Internal State:";
+    private static final String MEMORY_TITLE                    = "System RAM State:";
+    private static final String CONTROL_TITLE                   = "Emulation Control:";
+    private static final String ABOUT_PLAY                      = "Play / Pause the emulation and related visualizations.";
+    private static final String ABOUT_NEXT                      = "One Step - Executes one step of the instruction pipline.";
+    private static final String ABOUT_BACK                      = "Back Step - Reverses the instruction pipline, one instruction.";
     
     private static final String[] REGISTER_STRINGS = new String[] {     // Array of strings that are used in the register labels
         "Register A:",
@@ -77,7 +77,15 @@ public class Vizu80GUI
         "Ghost D':",
         "Ghost E':",
         "Ghost H':",
-        "Ghost L':" };
+        "Ghost L':"     };
+        
+    private static final String[] FULL_REGISTER_STRINGS = new String[] {
+        "32-Bit BC:",
+        "32-Bit DE:",
+        "32-Bit HL:",
+        "32-Bit BC':",
+        "32-Bit DE':",
+        "32-Bit HL':"   };
         
     private static final String[] OTHER_DATA_STRINGS = new String[] {   // Array of strings that are used for extra CPU data
         "Index X:",
@@ -167,14 +175,14 @@ public class Vizu80GUI
     private static ImageIcon nextImage, backImage, playImage;                       // Images for the control buttons
     
     
-    private static JLabel[] registersLabel;                                         // Array of labels for all of the registers in the CPU
-    private static JLabel[] registersContent;                                       // Array of content for all of the registers in the CPU
+    private static JLabel[] registersLabel;                                             // Array of labels for all of the registers in the CPU
+    private static JLabel[] registersContent;                                           // Array of content for all of the registers in the CPU
     private static JLabel[] fullLabel;
     private static JLabel[] fullContent;
-    private static JLabel flagsBinary, ghostFlagsBinary;                            // Label displaying binary representation of the CPU Flags & Flags'
-    private static JLabel[] othersLabel;                                            // Array of labels for all extra data content
-    private static JLabel[] othersContent;                                          // Array of content for all the extra data
-    private static JLabel frameCountLabel;                                          // Label for displaying the current data frame
+    private static JLabel flagsLabel, ghostFlagsLabel, flagsBinary, ghostFlagsBinary;   // Label displaying binary representation of the CPU Flags & Flags'
+    private static JLabel[] othersLabel;                                                // Array of labels for all extra data content
+    private static JLabel[] othersContent;                                              // Array of content for all the extra data
+    private static JLabel frameCountLabel;                                              // Label for displaying the current data frame
     
     public static void main(String[] args)
     {
@@ -216,8 +224,10 @@ public class Vizu80GUI
         
         // Initialize the CPU controller and the current data frame counts
         cpuController = new DataController();
-        dataCount = 0;
-        totalDataCount = 0;
+        dataCount = 1;
+        totalDataCount = 1;
+        
+        cpuDataPack = cpuController.getEmptyPack();
         
         /* ****************
          * CPU UPDATE CYCLE
@@ -510,8 +520,15 @@ public class Vizu80GUI
     {
         registersLabel = new JLabel[16];
         registersContent = new JLabel[16];
+        
         othersLabel = new JLabel[7];
         othersContent = new JLabel[7];
+        
+        fullLabel = new JLabel[6];
+        fullContent = new JLabel[6];
+        
+        flagsLabel = new JLabel("Binary F:");
+        ghostFlagsLabel = new JLabel("Binary F':");
         flagsBinary = new JLabel("00000000");
         ghostFlagsBinary = new JLabel("00000000");
         
@@ -551,7 +568,8 @@ public class Vizu80GUI
         registersContent[1].setFont(SUB_TITLE_FONT);
         registersContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[1].setHorizontalAlignment(JLabel.CENTER);
-                
+        
+        flagsLabel.setFont(SUB_TITLE_FONT);
         flagsBinary.setFont(SUB_TITLE_FONT);
         flagsBinary.setBorder(new BevelBorder(BevelBorder.LOWERED));
         flagsBinary.setHorizontalAlignment(JLabel.CENTER);
@@ -562,16 +580,22 @@ public class Vizu80GUI
         
         cpuContentPanel.add(registersLabel[1]);
         cpuContentPanel.add(registersContent[1]);
+        cpuContentPanel.add(flagsLabel);
         cpuContentPanel.add(flagsBinary);
         
         registersLabel[1].setBounds(registersContent[0].getX() + registersContent[0].getWidth() + 40, 
                                 registersLabel[0].getY(), sizeLabel.width, sizeLabel.height);
        
         registersContent[1].setBounds(registersLabel[1].getX() + registersLabel[1].getWidth() + 10,
-                                        registersLabel[0].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
+                                        registersLabel[0].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
+                                        
+        sizeLabel = flagsLabel.getPreferredSize();
         
-        flagsBinary.setBounds(registersContent[1].getX() + registersContent[1].getWidth() + 10,
-                                registersContent[1].getY(), sizeBinary.width + 10, sizeBinary.height + 10);
+        flagsLabel.setBounds(registersContent[1].getX() + registersContent[1].getWidth() + 40 - 1,
+                                registersLabel[1].getY(), sizeLabel.width, sizeLabel.height);
+                                
+        flagsBinary.setBounds(flagsLabel.getX() + flagsLabel.getWidth() + 20,
+                                flagsLabel.getY() - 7, sizeBinary.width + 10, sizeBinary.height + 10);
                                         
         /*
          *  REGISTER B -- Top Half BC
@@ -616,6 +640,28 @@ public class Vizu80GUI
        
         registersContent[3].setBounds(registersLabel[3].getX() + registersLabel[3].getWidth() + 10,
                                         registersLabel[3].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
+                                        
+        /*
+         *  REGISTER BC -- Complete BC
+         */
+        fullLabel[0] = new JLabel(FULL_REGISTER_STRINGS[0]);
+        fullContent[0] = new JLabel("0x0000");
+        fullLabel[0].setFont(SUB_TITLE_FONT);
+        fullContent[0].setFont(SUB_TITLE_FONT);
+        fullContent[0].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[0].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[0].getPreferredSize();
+        sizeContent = fullContent[0].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[0]);
+        cpuContentPanel.add(fullContent[0]);
+        
+        fullLabel[0].setBounds(registersContent[3].getX() + registersContent[3].getWidth() + 40 - 1,
+                                registersLabel[2].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[0].setBounds(fullLabel[0].getX() + fullLabel[0].getWidth() + 10,
+                                        fullLabel[0].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
                                         
                                         
         /*
@@ -664,6 +710,29 @@ public class Vizu80GUI
                                         registersLabel[5].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
                                         
         /*
+         *  REGISTER DE -- Complete DE
+         */
+        fullLabel[1] = new JLabel(FULL_REGISTER_STRINGS[1]);
+        fullContent[1] = new JLabel("0x0000");
+        fullLabel[1].setFont(SUB_TITLE_FONT);
+        fullContent[1].setFont(SUB_TITLE_FONT);
+        fullContent[1].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[1].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[1].getPreferredSize();
+        sizeContent = fullContent[1].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[1]);
+        cpuContentPanel.add(fullContent[1]);
+        
+        fullLabel[1].setBounds(registersContent[5].getX() + registersContent[5].getWidth() + 40 - 1,
+                                registersLabel[5].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[1].setBounds(fullLabel[1].getX() + fullLabel[1].getWidth() + 10,
+                                        fullLabel[1].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);                                
+                                        
+                                        
+        /*
          *  REGISTER H -- Top Half HL
          */
         registersLabel[6] = new JLabel(REGISTER_STRINGS[6]);
@@ -707,6 +776,30 @@ public class Vizu80GUI
         registersContent[7].setBounds(registersLabel[7].getX() + registersLabel[7].getWidth() + 11,
                                         registersLabel[7].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);                                
                                         
+       
+                                        
+        /*
+         *  REGISTER HL -- Complete HL
+         */
+        fullLabel[2] = new JLabel(FULL_REGISTER_STRINGS[2]);
+        fullContent[2] = new JLabel("0x0000");
+        fullLabel[2].setFont(SUB_TITLE_FONT);
+        fullContent[2].setFont(SUB_TITLE_FONT);
+        fullContent[2].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[2].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[2].getPreferredSize();
+        sizeContent = fullContent[2].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[2]);
+        cpuContentPanel.add(fullContent[2]);
+        
+        fullLabel[2].setBounds(registersContent[7].getX() + registersContent[7].getWidth() + 40 - 1,
+                                registersLabel[7].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[2].setBounds(fullLabel[2].getX() + fullLabel[2].getWidth() + 10,
+                                        fullLabel[2].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);  
+                                        
                                         
         /*
         *  Ghost A -- Top Half AF'
@@ -740,6 +833,7 @@ public class Vizu80GUI
         registersContent[9].setBorder(new BevelBorder(BevelBorder.LOWERED));
         registersContent[9].setHorizontalAlignment(JLabel.CENTER);
         
+        ghostFlagsLabel.setFont(SUB_TITLE_FONT);
         ghostFlagsBinary.setFont(SUB_TITLE_FONT);
         ghostFlagsBinary.setBorder(new BevelBorder(BevelBorder.LOWERED));
         ghostFlagsBinary.setHorizontalAlignment(JLabel.CENTER);
@@ -750,16 +844,23 @@ public class Vizu80GUI
         
         cpuContentPanel.add(registersLabel[9]);
         cpuContentPanel.add(registersContent[9]);
+        cpuContentPanel.add(ghostFlagsLabel);
         cpuContentPanel.add(ghostFlagsBinary);
         
         registersLabel[9].setBounds(registersContent[8].getX() + registersContent[8].getWidth() + 40,
                                 registersLabel[8].getY(), sizeLabel.width, sizeLabel.height);
        
         registersContent[9].setBounds(registersLabel[9].getX() + registersLabel[9].getWidth() + 24,
-                                        registersLabel[9].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
+                                        registersLabel[9].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
+                                        
+        sizeLabel = ghostFlagsLabel.getPreferredSize();
         
-        ghostFlagsBinary.setBounds(registersContent[9].getX() + registersContent[9].getWidth() + 10,
-                                registersContent[9].getY(), sizeBinary.width + 10, sizeBinary.height + 10);
+        ghostFlagsLabel.setBounds(registersContent[9].getX() + registersContent[9].getWidth() + 40 - 1,
+                                registersLabel[9].getY(), sizeLabel.width, sizeLabel.height);
+                                
+        ghostFlagsBinary.setBounds(ghostFlagsLabel.getX() + ghostFlagsLabel.getWidth() + 20,
+                                ghostFlagsLabel.getY() - 7, sizeBinary.width + 10, sizeBinary.height + 10);
+                                        
              
         /*
         *  Ghost B -- Top Half BC'
@@ -807,6 +908,30 @@ public class Vizu80GUI
         registersContent[11].setBounds(registersLabel[11].getX() + registersLabel[11].getWidth() + 23,
                                         registersLabel[11].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
                                         
+                                                
+        /*
+         *  REGISTER BC -- Complete BC'
+         */
+        fullLabel[3] = new JLabel(FULL_REGISTER_STRINGS[3]);
+        fullContent[3] = new JLabel("0x0000");
+        fullLabel[3].setFont(SUB_TITLE_FONT);
+        fullContent[3].setFont(SUB_TITLE_FONT);
+        fullContent[3].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[3].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[3].getPreferredSize();
+        sizeContent = fullContent[3].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[3]);
+        cpuContentPanel.add(fullContent[3]);
+        
+        fullLabel[3].setBounds(registersContent[11].getX() + registersContent[11].getWidth() + 40 - 1,
+                                registersLabel[11].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[3].setBounds(fullLabel[3].getX() + fullLabel[3].getWidth() + 10,
+                                        fullLabel[3].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
+                                        
+                                        
         /*
         *  Ghost D -- Top Half DE'
         */
@@ -851,6 +976,29 @@ public class Vizu80GUI
        
         registersContent[13].setBounds(registersLabel[13].getX() + registersLabel[13].getWidth() + 24,
                                         registersLabel[13].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
+                                        
+                                                        
+        /*
+         *  REGISTER DE -- Complete DE'
+         */
+        fullLabel[4] = new JLabel(FULL_REGISTER_STRINGS[4]);
+        fullContent[4] = new JLabel("0x0000");
+        fullLabel[4].setFont(SUB_TITLE_FONT);
+        fullContent[4].setFont(SUB_TITLE_FONT);
+        fullContent[4].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[4].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[4].getPreferredSize();
+        sizeContent = fullContent[4].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[4]);
+        cpuContentPanel.add(fullContent[4]);
+        
+        fullLabel[4].setBounds(registersContent[13].getX() + registersContent[13].getWidth() + 40 - 1,
+                                registersLabel[13].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[4].setBounds(fullLabel[4].getX() + fullLabel[4].getWidth() + 10,
+                                        fullLabel[4].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
                                  
                                         
         /*
@@ -897,6 +1045,29 @@ public class Vizu80GUI
        
         registersContent[15].setBounds(registersLabel[15].getX() + registersLabel[15].getWidth() + 25,
                                         registersLabel[15].getY() - 7, sizeContent.width + 10, sizeContent.height + 10);
+         
+                                        
+        /*
+         *  REGISTER HL -- Complete HL'
+         */
+        fullLabel[5] = new JLabel(FULL_REGISTER_STRINGS[5]);
+        fullContent[5] = new JLabel("0x0000");
+        fullLabel[5].setFont(SUB_TITLE_FONT);
+        fullContent[5].setFont(SUB_TITLE_FONT);
+        fullContent[5].setBorder(new BevelBorder(BevelBorder.LOWERED));
+        fullContent[5].setHorizontalAlignment(JLabel.CENTER);
+        
+        sizeLabel = fullLabel[5].getPreferredSize();
+        sizeContent = fullContent[5].getPreferredSize();
+        
+        cpuContentPanel.add(fullLabel[5]);
+        cpuContentPanel.add(fullContent[5]);
+        
+        fullLabel[5].setBounds(registersContent[15].getX() + registersContent[15].getWidth() + 40 - 1,
+                                registersLabel[15].getY(), sizeLabel.width, sizeLabel.height);
+       
+        fullContent[5].setBounds(fullLabel[5].getX() + fullLabel[5].getWidth() + 10,
+                                        fullLabel[5].getY() - 7, sizeContent.width + 10, sizeContent.height + 10); 
 
                                         
         /*
@@ -1295,14 +1466,12 @@ public class Vizu80GUI
         ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
         
         // FULL WIDTH REGISTERS
-        /*
         fullContent[0].setText(Utils.toHex32(cpuFullData[0], true));
         fullContent[1].setText(Utils.toHex32(cpuFullData[1], true));
         fullContent[2].setText(Utils.toHex32(cpuFullData[2], true));
         fullContent[3].setText(Utils.toHex32(cpuFullData[3], true));
         fullContent[4].setText(Utils.toHex32(cpuFullData[4], true));
         fullContent[5].setText(Utils.toHex32(cpuFullData[5], true));  
-        */
         
         // OTHER DATA -- POINTERS, COUNTERS, ETC.
         othersContent[0].setText(Utils.toHex32(cpuOtherData[0], true));

@@ -22,6 +22,22 @@ public class DataPack
         othersData = otherData;
     }
     
+    public static DataPack emptyPack()
+    {
+        int[] regData, fullData, otherData;
+        
+        regData = new int[16];
+        Utils.zero(regData);
+        
+        fullData = new int[6];
+        Utils.zero(fullData);
+        
+        otherData = new int[7];
+        Utils.zero(otherData);
+        
+        return new DataPack(regData, fullData, otherData);
+    }
+    
     public int[] getRegisterData()
     {
         return theRegisterData;

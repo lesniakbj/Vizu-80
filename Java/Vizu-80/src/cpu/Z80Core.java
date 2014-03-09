@@ -407,11 +407,16 @@ public class Z80Core implements ICPU
         for(int i = 0; i < ghostRegisters.length; i++)
             ghostRegisters[i] = 0x00;
         
+        // TEST DATA
+        registers[0] = 0x0A;
+        registers[1] = 0xBB;
+        registers[2] = 0xF7;
+        registers[7] = 0x06;
         // Reset all Index and Stack Pointers back to their intial states
-        index_x = index_y = stackPointer = 0x0000;
+        index_x = index_y = stackPointer = 0x0390;
         
         // Reset Interrupt and Refresh registers to their initial states
-        interruptRegister = refreshRegister = 0x00;
+        interruptRegister = refreshRegister = 0x28;
         
         // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial states
         interrupt_1 = interrupt_2 = false;

@@ -88,6 +88,12 @@ public class Utils
         return Integer.toBinaryString(Integer.parseInt(toHex16(convert, false), 16));
     }
     
+    public static void zero(int[] theArray)
+    {
+        for(int i = 0; i < theArray.length; i ++)
+            theArray[i] = 0;
+    }
+    
     public static void printArray(int[] theArray)
     {
         for(int i = 0; i < theArray.length; i++)
