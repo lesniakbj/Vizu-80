@@ -130,7 +130,7 @@ public class Vizu80GUI
     private static GridBagConstraints con;                  // Used to layout items in the GridBagLayout                      
     private static DataController cpuController;            // Controller component -- controls CPU simulation and data retrival
     private static DataPack cpuDataPack;                    // Data pack recieved from the CPU Controller     
-    private static int[] cpuRegisterData, cpuOtherData;     // Personal copy of register and other (pointers, counters, etc.) data
+    private static int[] cpuRegisterData, cpuFullData, cpuOtherData;     // Personal copy of register and other (pointers, counters, etc.) data
     private static volatile boolean isRunning;              // Is the simulation currently running. . . 
     private static volatile boolean startUpDone;            // Is the initial start up done. . . 
     private static int dataCount;                           // Current data frame we are observing
@@ -169,6 +169,8 @@ public class Vizu80GUI
     
     private static JLabel[] registersLabel;                                         // Array of labels for all of the registers in the CPU
     private static JLabel[] registersContent;                                       // Array of content for all of the registers in the CPU
+    private static JLabel[] fullLabel;
+    private static JLabel[] fullContent;
     private static JLabel flagsBinary, ghostFlagsBinary;                            // Label displaying binary representation of the CPU Flags & Flags'
     private static JLabel[] othersLabel;                                            // Array of labels for all extra data content
     private static JLabel[] othersContent;                                          // Array of content for all the extra data
@@ -1223,6 +1225,7 @@ public class Vizu80GUI
                     if(cpuDataPack != null)
                     {
                         cpuRegisterData = cpuDataPack.getRegisterData();
+                        cpuFullData = cpuDataPack.getFullRegisterData();
                         cpuOtherData = cpuDataPack.getOtherData();
                         dataCount--;
                     }
@@ -1236,6 +1239,7 @@ public class Vizu80GUI
                     if(cpuDataPack != null)
                     {
                         cpuRegisterData = cpuDataPack.getRegisterData();
+                        cpuFullData = cpuDataPack.getFullRegisterData();
                         cpuOtherData = cpuDataPack.getOtherData();
                         dataCount--;
                     }
@@ -1250,6 +1254,7 @@ public class Vizu80GUI
         
         cpuDataPack = cpuController.nextStep();
         cpuRegisterData = cpuDataPack.getRegisterData();
+        cpuFullData = cpuDataPack.getFullRegisterData();
         cpuOtherData = cpuDataPack.getOtherData();
          
         if(dataCount == totalDataCount)
@@ -1275,7 +1280,7 @@ public class Vizu80GUI
         registersContent[6].setText(Utils.toHex16(cpuRegisterData[5], true));
         registersContent[7].setText(Utils.toHex16(cpuRegisterData[6], true));        
         
-        // OTHER REGISTERS
+        // GHOST REGISTERS
         registersContent[8].setText(Utils.toHex16(cpuRegisterData[8], true));
         registersContent[9].setText(Utils.toHex16(cpuRegisterData[15], true));
         registersContent[10].setText(Utils.toHex16(cpuRegisterData[9], true));
@@ -1285,18 +1290,31 @@ public class Vizu80GUI
         registersContent[14].setText(Utils.toHex16(cpuRegisterData[13], true));
         registersContent[15].setText(Utils.toHex16(cpuRegisterData[14], true));
         
+        // BINARY FLAGS
         flagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[7]), 8));
         ghostFlagsBinary.setText(Utils.padBinary(Utils.toBinary(cpuRegisterData[15]), 8));
         
-        frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
+        // FULL WIDTH REGISTERS
+        /*
+        fullContent[0].setText(Utils.toHex32(cpuFullData[0], true));
+        fullContent[1].setText(Utils.toHex32(cpuFullData[1], true));
+        fullContent[2].setText(Utils.toHex32(cpuFullData[2], true));
+        fullContent[3].setText(Utils.toHex32(cpuFullData[3], true));
+        fullContent[4].setText(Utils.toHex32(cpuFullData[4], true));
+        fullContent[5].setText(Utils.toHex32(cpuFullData[5], true));  
+        */
         
+        // OTHER DATA -- POINTERS, COUNTERS, ETC.
         othersContent[0].setText(Utils.toHex32(cpuOtherData[0], true));
         othersContent[1].setText(Utils.toHex32(cpuOtherData[1], true));
         othersContent[2].setText(Utils.toHex32(cpuOtherData[2], true));
         othersContent[3].setText(Utils.toHex32(cpuOtherData[3], true));
         othersContent[4].setText(Utils.toHex16(cpuOtherData[4], true));
         othersContent[5].setText(Utils.toHex16(cpuOtherData[5], true));
-        othersContent[6].setText(Utils.toHex16(cpuOtherData[6], true));        
+        othersContent[6].setText(Utils.toHex16(cpuOtherData[6], true));  
+        
+        // FRAME COUNT 
+        frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
     }
     
     private static void shutdown()

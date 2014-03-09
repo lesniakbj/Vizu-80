@@ -39,7 +39,7 @@ public class Z80Core implements ICPU
     // [TO-DO]: Externalize, create a dedicated registers object
     private int[]           registers; // A, B, C, D, E, H, L, F
     private int[]           ghostRegisters; // A', B', C', D', E', H', L', F'
-    private int             indexRegister_1, indexRegister_2, programCounter, stackPointer;
+    private int             index_x, index_y, programCounter, stackPointer;
     private int             interruptRegister, refreshRegister;
     private int             indexer;
     
@@ -50,6 +50,10 @@ public class Z80Core implements ICPU
     private boolean         interrupt_1, interrupt_2;
     private boolean         maskingInterrupts;
     private boolean         nonMaskableInterrupt;
+    
+    int[] sendHalfRegData = new int[16]; // A BC DE HL F     x 2
+    int[] sendFullRegData = new int[6]; // BC DE HL         x 2
+    int[] sendOtherData = new int[7]; // IX IY PC SP IR RR IDX
 
     /**
      * Empty Z80 Constructor, does not specify System RAM nor System IO; TESTING ONLY - DO NOT USE!
@@ -278,43 +282,86 @@ public class Z80Core implements ICPU
         switch (reg)
         {
             case BC:
-                //return getBC();
+                return (registers[1] << 8) + registers[2]; // Move B to the upper half (8-Bits), and add C
             case DE:
-                //return getDE();
+                return (registers[3] << 8) + registers[4]; // repeat...
             case HL:
-                //return getHL();
+                return (registers[5] << 8) + registers[6];
             case GHOST_BC:
-                //return getBC_ALT();
+                return (ghostRegisters[1] << 8) + ghostRegisters[2];
             case GHOST_DE:
-                //return getDE_ALT();
+                return (ghostRegisters[3] << 8) + ghostRegisters[4];
             case GHOST_HL:
-                //return getHL_ALT();
+                return (ghostRegisters[5] << 8) + ghostRegisters[6];
             case IX:
-                //return reg_IX;
+                return index_x;
             case IY:
-                //return reg_IY;
+                return index_y;
             case SP:
-                //return getSP();
+                return stackPointer;
             case PC:
-                //return reg_PC;
+                return programCounter;
             case A:
-                //return reg_A;
+                return registers[0];
             case F:
-                //return reg_F;
+                return registers[7];
             case GHOST_A:
-                //return reg_A_ALT;
+                return ghostRegisters[0];
             case GHOST_F:
-                //return reg_F_ALT;
+                return ghostRegisters[7];
             case I:
-                //return reg_I;
+                return interruptRegister;
             case R:
-                //return reg_R;
+                return refreshRegister;
             default:
                 return -1;
             
         }
     }
     
+    public int getHalfRegisterContents(HalfRegisters reg)
+    {
+        switch (reg)
+        {
+            case A:
+                return registers[0];
+            case B:
+                return registers[1];
+            case C:
+                return registers[2];
+            case D:
+                return registers[3];
+            case E:
+                return registers[4];
+            case H:
+                return registers[5];
+            case L:
+                return registers[6];
+            case F:
+                return registers[7];
+            case GHOST_A:
+                return ghostRegisters[0];
+            case GHOST_B:
+                return ghostRegisters[1];
+            case GHOST_C:
+                return ghostRegisters[2];
+            case GHOST_D:
+                return ghostRegisters[3];
+            case GHOST_E:
+                return ghostRegisters[4];
+            case GHOST_H:
+                return ghostRegisters[5];
+            case GHOST_L:
+                return ghostRegisters[6];
+            case GHOST_F:
+                return ghostRegisters[7];
+            default:
+                return -1;
+            
+        }
+    }
+
+
     /**
      * Public facing method that returns the location specified by the CPU Stack Pointer.
      * 
@@ -361,7 +408,7 @@ public class Z80Core implements ICPU
             ghostRegisters[i] = 0x00;
         
         // Reset all Index and Stack Pointers back to their intial states
-        indexRegister_1 = indexRegister_2 = stackPointer = 0x0000;
+        index_x = index_y = stackPointer = 0x0000;
         
         // Reset Interrupt and Refresh registers to their initial states
         interruptRegister = refreshRegister = 0x00;
@@ -391,36 +438,39 @@ public class Z80Core implements ICPU
     }
     
     public DataPack getDataPack()
-    {
-        int[] sendRegData = new int[16]; // A BC DE HL F     x 2
-        int[] sendOtherData = new int[7]; // IX IY PC SP IR RR IDX
+    {        
+        sendHalfRegData[0] = getHalfRegisterContents(HalfRegisters.A);
+        sendHalfRegData[1] = getHalfRegisterContents(HalfRegisters.B);
+        sendHalfRegData[2] = getHalfRegisterContents(HalfRegisters.C);
+        sendHalfRegData[3] = getHalfRegisterContents(HalfRegisters.D);
+        sendHalfRegData[4] = getHalfRegisterContents(HalfRegisters.E);
+        sendHalfRegData[5] = getHalfRegisterContents(HalfRegisters.H);
+        sendHalfRegData[6] = getHalfRegisterContents(HalfRegisters.L);
+        sendHalfRegData[7] = getHalfRegisterContents(HalfRegisters.F);
+        sendHalfRegData[8] = getHalfRegisterContents(HalfRegisters.GHOST_A);
+        sendHalfRegData[9] = getHalfRegisterContents(HalfRegisters.GHOST_B);
+        sendHalfRegData[10] = getHalfRegisterContents(HalfRegisters.GHOST_C);
+        sendHalfRegData[11] = getHalfRegisterContents(HalfRegisters.GHOST_D);
+        sendHalfRegData[12] = getHalfRegisterContents(HalfRegisters.GHOST_E);
+        sendHalfRegData[13] = getHalfRegisterContents(HalfRegisters.GHOST_H);
+        sendHalfRegData[14] = getHalfRegisterContents(HalfRegisters.GHOST_L);
+        sendHalfRegData[15] = getHalfRegisterContents(HalfRegisters.GHOST_F);
         
-        sendRegData[0] = registers[0];
-        sendRegData[1] = registers[1];
-        sendRegData[2] = registers[2];
-        sendRegData[3] = registers[3];
-        sendRegData[4] = registers[4];
-        sendRegData[5] = registers[5];
-        sendRegData[6] = registers[6];
-        sendRegData[7] = registers[7];
-        sendRegData[8] = ghostRegisters[0];
-        sendRegData[9] = ghostRegisters[1];
-        sendRegData[10] = ghostRegisters[2];
-        sendRegData[11] = ghostRegisters[3];
-        sendRegData[12] = ghostRegisters[4];
-        sendRegData[13] = ghostRegisters[5];
-        sendRegData[14] = ghostRegisters[6];
-        sendRegData[15] = ghostRegisters[7];
+        sendFullRegData[0] = getRegisterContents(FullRegisters.BC);
+        sendFullRegData[1] = getRegisterContents(FullRegisters.DE);
+        sendFullRegData[2] = getRegisterContents(FullRegisters.HL);
+        sendFullRegData[3] = getRegisterContents(FullRegisters.GHOST_BC);
+        sendFullRegData[4] = getRegisterContents(FullRegisters.GHOST_DE);
+        sendFullRegData[5] = getRegisterContents(FullRegisters.GHOST_HL);
         
-        
-        sendOtherData[0] = indexRegister_1;
-        sendOtherData[1] = indexRegister_2;
-        sendOtherData[2] = programCounter;
-        sendOtherData[3] = stackPointer;
-        sendOtherData[4] = interruptRegister;
-        sendOtherData[5] = refreshRegister;
+        sendOtherData[0] = getRegisterContents(FullRegisters.IX);
+        sendOtherData[1] = getRegisterContents(FullRegisters.IY);
+        sendOtherData[2] = getRegisterContents(FullRegisters.PC);
+        sendOtherData[3] = getRegisterContents(FullRegisters.SP);
+        sendOtherData[4] = getRegisterContents(FullRegisters.I);
+        sendOtherData[5] = getRegisterContents(FullRegisters.R);
         sendOtherData[6] = indexer;
         
-        return new DataPack(sendRegData, sendOtherData);
+        return new DataPack(sendHalfRegData, sendFullRegData, sendOtherData);
     }
 }
