@@ -29,11 +29,12 @@ public class Z80Core implements ICPU
     // Externalized parts of the CPU, defined when the z80 CPU is constructed, interfaces (need to be implemented)
     private IMemory         systemRAM;
     private IDevice         systemIO;
+    private static final int maxAddressSpace            = 0xFFFF; // 64 KB
     
     // Internalized CPU Flags and State
     private int             currentOpcode;
     private boolean         halted;
-    private long            states;
+    private long            timeState;
     
     // CPU Registers
     // [TO-DO]: Externalize, create a dedicated registers object
@@ -68,7 +69,7 @@ public class Z80Core implements ICPU
     {
         systemRAM = null;
         systemIO = null;
-        states = 0;
+        timeState = 0;
         
         registers = new int[8];
         ghostRegisters = new int[8];
@@ -94,7 +95,7 @@ public class Z80Core implements ICPU
     {
         systemRAM = ram;
         systemIO = device;
-        states = 0;
+        timeState = 0;
         
         registers = new int[8];
         ghostRegisters = new int[8];
@@ -196,25 +197,25 @@ public class Z80Core implements ICPU
     }
         
     /**
-     * Public facing method to find the current States of the CPU.
+     * Public facing method to find the current timeState of the CPU.
      * 
-     * @return [TO-DO]: WTF IS THE STATES VARIABLE?!
+     * @return [TO-DO]: WTF IS THE timeState VARIABLE?!
      * 
      * @since 0.0.a
      */
-    public long getStates()
+    public long getTimeState()
     {
-        return states;
+        return timeState;
     }
     
     /**
-     * Public facing method to reset CPU States back to their initial state.
+     * Public facing method to reset CPU timeState back to their initial state.
      * 
      * @since 0.0.a
      */
-    public void resetStates()
+    public void resetTimeState()
     {
-        states = 0;
+        timeState = 0;
     }
     
     /**
@@ -388,10 +389,10 @@ public class Z80Core implements ICPU
     }
     
     /**
-     * Runs the reset process of the CPU. <li>First resets all of the Registers to their initial states, followed
+     * Runs the reset process of the CPU. <li>First resets all of the Registers to their initial timeState, followed
      * by the 2 Index Registers and Stack Pointers.</li> <li>Resets the Interrupt and Refresh Registers, sets Interrupt
-     * 1 and 2 to their initial states, and stop masking all interrupts.</li> <li>Finally, set the Program Counter to
-     * the saved Reset Address, and set the initial CPU States.</li>
+     * 1 and 2 to their initial timeState, and stop masking all interrupts.</li> <li>Finally, set the Program Counter to
+     * the saved Reset Address, and set the initial CPU timeState.</li>
      * 
      * @since 0.0.a
      */
@@ -400,7 +401,7 @@ public class Z80Core implements ICPU
         // Processor is not currently halted
         halted = false;
         
-        // Reset all Registers and Ghost Registers back to their initial states
+        // Reset all Registers and Ghost Registers back to their initial timeState
         for(int i = 0; i < registers.length; i++)
             registers[i] = 0x00;
             
@@ -412,20 +413,20 @@ public class Z80Core implements ICPU
         registers[1] = 0xBB;
         registers[2] = 0xF7;
         registers[7] = 0x06;
-        // Reset all Index and Stack Pointers back to their intial states
+        // Reset all Index and Stack Pointers back to their intial timeState
         index_x = index_y = stackPointer = 0x0390;
         
-        // Reset Interrupt and Refresh registers to their initial states
+        // Reset Interrupt and Refresh registers to their initial timeState
         interruptRegister = refreshRegister = 0x28;
         
-        // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial states
+        // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial timeState
         interrupt_1 = interrupt_2 = false;
         maskingInterrupts = false;
         nonMaskableInterrupt = false;
         
         // Set the Program Counter to the initial program address and set initial State
         programCounter = resetAddress;
-        states = 0;
+        timeState = 0;
         
     }
     
@@ -439,7 +440,148 @@ public class Z80Core implements ICPU
      */
     private void decodeOpcode(int opcode) throws CPUException
     {
-        states = states + OpcodeStateTables.getOpcodeTState(opcode);
+        timeState = timeState + OpcodeStateTables.getOpcodeTimeState(opcode);
+        
+        switch(opcode)
+        {
+            case 0x00:  // NOP
+                break;  // Program Counter already incremented in executeInstruction()
+                
+            case 0x01:  // LD BC, nn -- Load BC with word nn from system RAM, pointed to by the program counter
+            {
+                loadFull(FullRegisters.BC, systemRAM.readWord(programCounter));
+                programCounter += 2;
+                programCounter = programCounter & maxAddressSpace;
+                break;
+            }
+            
+            case 0x02: // LD (BC), a -- Load a into the system RAM location pointed to by BC
+            {
+                systemRAM.writeByte(getRegisterContents(FullRegisters.BC), registers[0]);
+                break;
+            }
+            
+            case 0x03: // INC BC -- Adds one to BC
+            {
+                loadFull(FullRegisters.BC, ALU_incWord(getRegisterContents(FullRegisters.BC)));
+                break;
+            }
+            
+            case 0x04: // INC B -- Adds one to B
+            {
+                loadHalf(HalfRegisters.B, ALU_incByte(getHalfRegisterContents(HalfRegisters.B)));
+                break;
+            }
+            
+            case 0x11: // LD DE, nn -- Load DE with word nn from system RAM, pointed to by the program counter
+            {
+                loadFull(FullRegisters.DE, systemRAM.readWord(programCounter));
+                programCounter += 2;
+                programCounter = programCounter & maxAddressSpace;
+                break;
+            }
+            
+            case 0x21: // LD HL, nn -- Load HL with word nn from system RAM, pointed to by the program counter
+            {
+                loadFull(FullRegisters.HL, systemRAM.readWord(programCounter));
+                programCounter += 2;
+                programCounter = programCounter & maxAddressSpace;
+                break;
+            }
+            
+            case 0x31: // LD SP, nn -- Load stack pointer with word nn from system RAM, pointed to by the program counter
+            {
+                loadFull(FullRegisters.SP, systemRAM.readWord(programCounter));
+                programCounter += 2;
+                programCounter = programCounter & maxAddressSpace;
+                break;
+            }
+        }
+    }
+    
+    // Upper Register ... 11111111 00000000     (0xFF00) & 
+    //                    10011010 00010110     (data)
+    //                    =================
+    //                    10011010 00000000     >> 8 bits right
+    //                    =================
+    //                             10011010     (Upper Register = Upper byte)
+    //
+    //
+    // Lower Register ... 00000000 11111111     (0x00FF) & 
+    //                    10011010 00010110     (data)
+    //                    =================
+    //                    00000000 00010110     No Shift, drop top 8 bits
+    //                    =================
+    //                             00010110     (Lower Register = Lower byte)
+    private void loadFull(FullRegisters reg, int data)
+    {
+        switch(reg)
+        {
+            case BC: // Upper - Lower
+            {
+                registers[1] = (data & 0xFF00) >> 8;    // Register B ... 11111111 00000000 (0xFF00) & 
+                                                        //                10011010 00010110 (data)
+                                                        //                =================
+                                                        //                10011010 00000000
+                                                        //                =================
+                                                        //                         10011010 (Upper byte)
+                
+                registers[2] = data & 0x00FF;           // Register C  
+            }
+            
+            case DE:
+            {
+                registers[3] = (data & 0xFF00) >> 8;
+                registers[4] = data & 0x00FF;
+            }
+            
+            case HL:
+            {
+                registers[5] = (data & 0xFF00) >> 8;
+                registers[6] = data & 0x00FF;
+            }
+            
+            case SP:
+            {
+                stackPointer = data;
+            }
+        }
+    }
+    
+    private void loadHalf(HalfRegisters reg, int data)
+    {
+        switch(reg)
+        {
+            case B:
+            {
+                registers[1] = data & 0xFF;
+            }
+        }
+    }
+    
+    private static int ALU_incWord(int data)
+    {
+        data++;
+        return (data & 0x0000FFFF);
+    }
+    
+    private static int ALU_incByte(int data)
+    {
+        if(getCarryFlag())
+            registers[7] = 0x01;
+        else
+            registers[7] = 0x00;
+           
+        setHalfCarryFlag(data, 1);
+        setParityOverflowFlag(data == 0x7F);
+        data++;
+        
+        setSignFlag((data & 0x0080) != 0);
+        data = data * 0x00FF;
+        setZeroFlag(data == 0);
+        setOtherFlags(data);
+            
+        return data;
     }
     
     public DataPack getDataPack()
