@@ -9,7 +9,7 @@ package src.cpu;
  */
 public class OpcodeStateTables
 {
-   private final static byte[] OPCODE_TIME_TABLE = new byte[] {
+   private final static byte[] OPCODE_CYCLE_TABLE = new byte[] {
        4, 16, 7, 6, 4, 4, 7, 4, 4, 11, 7, 6, 4,4, 7, 4, // 0
        0, 16, 7, 6, 4, 4, 7, 4, 12, 11, 7, 6, 4, 4, 7, 4, // 10
        0, 16, 7, 6, 4, 4, 7, 4, 0, 11, 7, 6, 4, 4, 7, 4, // 20
@@ -104,9 +104,9 @@ public class OpcodeStateTables
         0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 23, 0 // F0
     };
     
-    public static byte getOpcodeTimeState(int opcode)
+    public static byte getOpcodeCycleTimeState(int opcode)
     {
-        return OPCODE_TIME_TABLE[opcode];
+        return OPCODE_CYCLE_TABLE[opcode];
     }
     
     public static byte getOpcodeCBState(int opcode)

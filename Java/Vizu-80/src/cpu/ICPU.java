@@ -14,7 +14,7 @@ public interface ICPU
     
     public boolean isHalted(); 
        
-    public long getTimeState();
+    public long getCycles();
     
-    public void resetTimeState();
+    public void resetCycles();
 }

@@ -2,22 +2,13 @@ package src.cpu;
 
 import src.DataPack;
 
-/*
- * 
- * VERSION 0.1.a MILESTONES:
- * --------------------------
- * - Decoding of all opcodes (unimplemented methods for actions of opcodes)
- * - Complete getRegisterContents()
- * 
- */
-
 /**
  * Concrete implementation of the ZiLOG z80 CPU Core,emulating all of the known instruction set.
  * Attempts to implement all of the undocumented functionality of the processor as well.
  * 
  * 
  * @author Brendan Lesniak
- * @version 0.0.a
+ * @version 0.1.a
  */
 public class Z80Core implements ICPU
 {
@@ -47,12 +38,12 @@ public class Z80Core implements ICPU
     // Externalized parts of the CPU, defined when the z80 CPU is constructed, interfaces (need to be implemented)
     private IMemory         systemRAM;
     private IDevice         systemIO;
-    private static final int maxAddressSpace = 0xFFFF; // 64 KB
+    private static final int maxAddressSpace    = 0xFFFF;   // 64 KB
     
     // Internalized CPU Flags and State
     private int             currentOpcode;
     private boolean         halted;
-    private long            timeState;
+    private long            cycles;
     
     // CPU Registers
     // [TO-DO]: Externalize, create a dedicated registers object
@@ -70,9 +61,9 @@ public class Z80Core implements ICPU
     private boolean         maskingInterrupts;
     private boolean         nonMaskableInterrupt;
     
-    int[] sendHalfRegData = new int[16]; // A BC DE HL F     x 2
-    int[] sendFullRegData = new int[6]; // BC DE HL         x 2
-    int[] sendOtherData = new int[7]; // IX IY PC SP IR RR IDX
+    int[] sendHalfRegData       = new int[16];  // A BC DE HL F     x 2
+    int[] sendFullRegData       = new int[6];   // BC DE HL         x 2
+    int[] sendOtherData         = new int[7];   // IX IY PC SP IR RR IDX
 
     /**
      * Empty Z80 Constructor, does not specify System RAM nor System IO; TESTING ONLY - DO NOT USE!
@@ -87,7 +78,7 @@ public class Z80Core implements ICPU
     {
         systemRAM = null;
         systemIO = null;
-        timeState = 0;
+        cycles = 0;
         
         registers = new int[8];
         ghostRegisters = new int[8];
@@ -113,7 +104,7 @@ public class Z80Core implements ICPU
     {
         systemRAM = ram;
         systemIO = device;
-        timeState = 0;
+        cycles = 0;
         
         registers = new int[8];
         ghostRegisters = new int[8];
@@ -215,25 +206,25 @@ public class Z80Core implements ICPU
     }
         
     /**
-     * Public facing method to find the current timeState of the CPU.
+     * Public facing method to find the current cycles of the CPU.
      * 
-     * @return [TO-DO]: WTF IS THE timeState VARIABLE?!
+     * @return [TO-DO]: WTF IS THE cycles VARIABLE?!
      * 
      * @since 0.0.a
      */
-    public long getTimeState()
+    public long getCycles()
     {
-        return timeState;
+        return cycles;
     }
     
     /**
-     * Public facing method to reset CPU timeState back to their initial state.
+     * Public facing method to reset CPU cycles back to their initial state.
      * 
      * @since 0.0.a
      */
-    public void resetTimeState()
+    public void resetCycles()
     {
-        timeState = 0;
+        cycles = 0;
     }
     
     /**
@@ -407,10 +398,10 @@ public class Z80Core implements ICPU
     }
     
     /**
-     * Runs the reset process of the CPU. <li>First resets all of the Registers to their initial timeState, followed
+     * Runs the reset process of the CPU. <li>First resets all of the Registers to their initial cycles, followed
      * by the 2 Index Registers and Stack Pointers.</li> <li>Resets the Interrupt and Refresh Registers, sets Interrupt
-     * 1 and 2 to their initial timeState, and stop masking all interrupts.</li> <li>Finally, set the Program Counter to
-     * the saved Reset Address, and set the initial CPU timeState.</li>
+     * 1 and 2 to their initial cycles, and stop masking all interrupts.</li> <li>Finally, set the Program Counter to
+     * the saved Reset Address, and set the initial CPU cycles.</li>
      * 
      * @since 0.0.a
      */
@@ -419,7 +410,7 @@ public class Z80Core implements ICPU
         // Processor is not currently halted
         halted = false;
         
-        // Reset all Registers and Ghost Registers back to their initial timeState
+        // Reset all Registers and Ghost Registers back to their initial cycles
         for(int i = 0; i < registers.length; i++)
             registers[i] = 0x00;
             
@@ -431,20 +422,20 @@ public class Z80Core implements ICPU
         registers[1] = 0xBB;
         registers[2] = 0xF7;
         registers[7] = 0x06;
-        // Reset all Index and Stack Pointers back to their intial timeState
+        // Reset all Index and Stack Pointers back to their intial cycles
         index_x = index_y = stackPointer = 0x0390;
         
-        // Reset Interrupt and Refresh registers to their initial timeState
+        // Reset Interrupt and Refresh registers to their initial cycles
         interruptRegister = refreshRegister = 0x28;
         
-        // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial timeState
+        // Set Interrupt Flag 1 & 2 and Interrupt Mask to initial cycles
         interrupt_1 = interrupt_2 = false;
         maskingInterrupts = false;
         nonMaskableInterrupt = false;
         
         // Set the Program Counter to the initial program address and set initial State
         programCounter = resetAddress;
-        timeState = 0;
+        cycles = 0;
         
     }
     
@@ -458,12 +449,14 @@ public class Z80Core implements ICPU
      */
     private void decodeOpcode(int opcode) throws CPUException
     {
-        timeState = timeState + OpcodeStateTables.getOpcodeTimeState(opcode);
+        cycles = cycles + OpcodeStateTables.getOpcodeCycleTimeState(opcode);
         
         switch(opcode)
         {
             case 0x00:  // NOP
+            {
                 break;  // Program Counter already incremented in executeInstruction()
+            }
                 
             case 0x01:  // LD BC, nn -- Load BC with word nn from system RAM, pointed to by the program counter
             {
@@ -473,7 +466,7 @@ public class Z80Core implements ICPU
                 break;
             }
             
-            case 0x02: // LD (BC), a -- Load a into the system RAM location pointed to by BC
+            case 0x02: // LD (BC), a -- Stores a into the system RAM location pointed to by BC
             {
                 systemRAM.writeByte(getRegisterContents(FullRegisters.BC), registers[0]);
                 break;
@@ -491,6 +484,19 @@ public class Z80Core implements ICPU
                 break;
             }
             
+            case 0x05: // DEC B -- Decrement B by 1
+            {
+                loadHalf(HalfRegisters.B, ALU_decByte(getHalfRegisterContents(HalfRegisters.B)));
+                break;
+            }
+            
+            case 0x06: // LD B, n -- Loads n from system RAM into Byte Register B
+            {
+                loadHalf(HalfRegisters.B, systemRAM.readByte(programCounter));
+                programCounter += 1;
+                programCounter = programCounter & maxAddressSpace;
+            }
+            
             case 0x11: // LD DE, nn -- Load DE with word nn from system RAM, pointed to by the program counter
             {
                 loadFull(FullRegisters.DE, systemRAM.readWord(programCounter));
@@ -499,11 +505,23 @@ public class Z80Core implements ICPU
                 break;
             }
             
+            case 0x14: // INC D -- Adds one to D
+            {
+                loadHalf(HalfRegisters.D, ALU_incByte(getHalfRegisterContents(HalfRegisters.D)));
+                break;
+            }
+            
             case 0x21: // LD HL, nn -- Load HL with word nn from system RAM, pointed to by the program counter
             {
                 loadFull(FullRegisters.HL, systemRAM.readWord(programCounter));
                 programCounter += 2;
                 programCounter = programCounter & maxAddressSpace;
+                break;
+            }
+                        
+            case 0x24: // INC H -- Adds one to H
+            {
+                loadHalf(HalfRegisters.H, ALU_incByte(getHalfRegisterContents(HalfRegisters.H)));
                 break;
             }
             
@@ -574,6 +592,16 @@ public class Z80Core implements ICPU
             {
                 registers[1] = data & 0xFF;
             }
+            
+            case D:
+            {
+                registers[3] = data & 0xFF;
+            }
+            
+            case H:
+            {
+                registers[5] = data & 0xFF;
+            }
         }
     }
     
@@ -585,29 +613,225 @@ public class Z80Core implements ICPU
     
     private int ALU_incByte(int data)
     {
-        if(data == 1)//getCarryFlag())
-            registers[7] = 0x01;
+        if(getFlag(Flags.CARRY))                // Was there a carry?
+            registers[7] = 0x01;                // Set the initial state of the Flags 
         else
             registers[7] = 0x00;
            
-        //setHalfCarryFlag(data, 1);
-        //setParityOverflowFlag(data == 0x7F);
-        data++;
+        setHalfCarryFlagAddition(data, 0x01);   // Set if there will be a half carry, will the bottom 4 bits overflow
+        setOverflowFlag(data == 0x7F);          // Set if the data will overflow to the upper 8 bits
         
-        //setSignFlag((data & 0x0080) != 0);
-        data = data & 0xFF;
-        setZeroFlag(data == 0);
-        //setOtherFlags(data);
+        data++;                                 // Incrememnt the data
+        setSignFlag((data & SIGN_MASK) != 0);   // Set if there was a change in sign due to the incrememnt
+        
+        data = data & 0xFF;                     // Mask the data back down to one byte
+        setZeroFlag(data == 0);                 // Set if the data is == to 0
+        
+        unsetFlag(Flags.SUBTRACT);
+        //setOtherFlags(data);                  // Set the undocumented flags
             
         return data;
+    }
+    
+    private int ALU_decByte(int data)
+    {
+        if(getFlag(Flags.CARRY))
+            registers[7] = 0x01;
+        else
+            registers[7] = 0x00;
+            
+        setHalfCarryFlagSubtraction(data, 0x01);
+        setOverflowFlag(data == 0x80);              // Set if the data will underflow to the lower 7 bits
+        
+        data--;
+        setSignFlag((data & SIGN_MASK) != 0);
+        
+        data = data & 0xFF;
+        setZeroFlag(data == 0);
+        
+        setFlag(Flags.SUBTRACT);
+        //setOthe
+        
+        return data;
+    }
+    
+     private void setFlag(Flags flag)
+    {
+        switch(flag)
+        {
+            case SIGN:
+            {
+                registers[7] = registers[7] | SIGN_MASK;
+                break;
+            } 
+            
+            case ZERO:
+            {
+                registers[7] = registers[7] | ZERO_MASK;
+                break;
+            }
+            
+            case HALF_CARRY:
+            {
+                registers[7] = registers[7] | HALF_CARRY_MASK;
+                break;
+            }
+            
+            case PARITY_OFLOW:
+            {
+                registers[7] = registers[7] | OFLOW_PARITY_MASK;
+                break;
+            }
+            
+            case SUBTRACT:
+            {
+                registers[7] = registers[7] | SUBTRACT_MASK;
+                break;
+            }
+            
+            case CARRY:
+            {
+                registers[7] = registers[7] | CARRY_MASK;
+                break;
+            }
+        }
+    }
+            
+    private void unsetFlag(Flags flag)
+    {
+        switch(flag)
+        {
+            case SIGN:
+            {
+                registers[7] = registers[7] & RESET_SIGN_MASK;
+                break;
+            } 
+            
+            case ZERO:
+            {
+                registers[7] = registers[7] & RESET_ZERO_MASK;
+                break;
+            }
+            
+            case HALF_CARRY:
+            {
+                registers[7] = registers[7] & RESET_HALF_MASK;
+                break;
+            }
+            
+            case PARITY_OFLOW:
+            {
+                registers[7] = registers[7] & RESET_OFLOW_MASK;
+                break;
+            }
+            
+            case SUBTRACT:
+            {
+                registers[7] = registers[7] & RESET_SUB_MASK;
+                break;
+            }
+            
+            case CARRY:
+            {
+                registers[7] = registers[7] & RESET_CARRY_MASK;
+                break;
+            }
+        }
+    }
+    
+    private boolean getFlag(Flags flag)
+    {
+        switch(flag)
+        {
+            case SIGN:
+            {
+                return (registers[7] & SIGN_MASK) != 0;         // 00110100 (data) & 10000000 (mask) == 1 if bit 0 set, 0 if not
+            } 
+            
+            case ZERO:
+            {
+                return (registers[7] & ZERO_MASK) != 0;         // 00110100 (data) & 01000000 (mask) == 1 if bit 0 set, 0 if not
+            }
+            
+            case HALF_CARRY:
+            {
+                return (registers[7] & HALF_CARRY_MASK) != 0;   // 00110100 (data) & 00010000 (mask) == 1 if bit 0 set, 0 if not
+            }
+            
+            case PARITY_OFLOW:
+            {
+                return (registers[7] & OFLOW_PARITY_MASK) != 0; // 00110100 (data) & 00000100 (mask) == 1 if bit 0 set, 0 if not
+            }
+            
+            case SUBTRACT:
+            {
+                return (registers[7] & SUBTRACT_MASK) != 0;     // 00110100 (data) & 00000010 (mask) == 1 if bit 0 set, 0 if not
+            }
+            
+            case CARRY:
+            {
+                return (registers[7] & CARRY_MASK) != 0;        // 00110100 (data) & 00000001 (mask) == 1 if bit 0 set, 0 if not
+            }
+        }
+        
+        return false;
+    }
+    
+    private void setHalfCarryFlagAddition(int data, int dataAdded)
+    {
+        data = data & 0x0F;             // Clear upper 4 bits of data to 0
+        dataAdded = dataAdded & 0x0F;   // Clear upper 4 bits of dataAdded to 0
+        
+        setHalfCarryFlag((data + dataAdded) > 0x0F);   // If there was a half cary, there will be a bit present at bit 0:
+                                                        // (data + dataAdded >> 0x0F) == 1
+    }
+    
+    private void setHalfCarryFlagSubtraction(int data, int dataHalf)
+    {
+        data = data & 0x0F;
+        dataHalf = dataHalf & 0x0F;
+        
+        setHalfCarryFlag(data < dataHalf);
+    }
+
+    private void setOverflowFlag(boolean overflow)
+    {
+        if(overflow)
+            setFlag(Flags.PARITY_OFLOW);
+        else
+            unsetFlag(Flags.PARITY_OFLOW);
     }
     
     private void setZeroFlag(boolean zero)
     {
         if(zero)
-            registers[7] = registers[7] | ZERO_MASK;
+            setFlag(Flags.ZERO);
         else
-            registers[7] = registers[7] & RESET_ZERO_MASK;
+            unsetFlag(Flags.ZERO);
+    }
+    
+    private void setCarryFlag(boolean carried)
+    {
+        if(carried)
+            setFlag(Flags.CARRY);
+        else
+            setFlag(Flags.CARRY);
+    }
+    
+    private void setSignFlag(boolean signBit)
+    {
+        if(signBit)
+            setFlag(Flags.SIGN);
+        else
+            unsetFlag(Flags.SIGN);
+    }
+    
+    private void setHalfCarryFlag(boolean carried)
+    {
+        if(carried)
+            setFlag(Flags.HALF_CARRY);
+        else
+            unsetFlag(Flags.HALF_CARRY);
     }
     
     public DataPack getDataPack()
