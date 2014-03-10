@@ -26,10 +26,28 @@ public class Z80Core implements ICPU
     private static final int versionMinor = 0;
     private static final String versionPatch = "a";
     
+    private static final int SIGN_MASK          = 0x80;                           // 1 0 0 0 0 0 0 0 -- 128                                                                
+    private static final int RESET_SIGN_MASK    = 0x7F;     // 10000000 ^ 11111111 = 0 1 1 1 1 1 1 1 
+                    
+    private static final int ZERO_MASK          = 0x40;                           // 0 1 0 0 0 0 0 0 -- 64
+    private static final int RESET_ZERO_MASK    = 0xBF;     // 01000000 ^ 11111111 = 1 0 1 1 1 1 1 1
+                                                                            
+    private static final int HALF_CARRY_MASK    = 0x10;                           // 0 0 0 1 0 0 0 0 -- 16
+    private static final int RESET_HALF_MASK    = 0xEF;     // 00010000 ^ 11111111 = 1 1 1 0 1 1 1 1 
+                                                                            
+    private static final int OFLOW_PARITY_MASK  = 0x04;                           // 0 0 0 0 0 1 0 0 -- 4
+    private static final int RESET_OFLOW_MASK   = 0xFB;     // 00000100 ^ 11111111 = 1 1 1 1 1 0 1 1
+    
+    private static final int SUBTRACT_MASK      = 0x02;                           // 0 0 0 0 0 0 1 0 -- 2
+    private static final int RESET_SUB_MASK     = 0xFD;     // 00000010 ^ 11111111 = 1 1 1 1 1 1 0 1
+    
+    private static final int CARRY_MASK         = 0x01;                           // 0 0 0 0 0 0 0 1 -- 1
+    private static final int RESET_CARRY_MASK   = 0xFE;     // 00000001 ^ 11111111 = 1 1 1 1 1 1 1 0 
+    
     // Externalized parts of the CPU, defined when the z80 CPU is constructed, interfaces (need to be implemented)
     private IMemory         systemRAM;
     private IDevice         systemIO;
-    private static final int maxAddressSpace            = 0xFFFF; // 64 KB
+    private static final int maxAddressSpace = 0xFFFF; // 64 KB
     
     // Internalized CPU Flags and State
     private int             currentOpcode;
@@ -559,29 +577,37 @@ public class Z80Core implements ICPU
         }
     }
     
-    private static int ALU_incWord(int data)
+    private int ALU_incWord(int data)
     {
         data++;
         return (data & 0x0000FFFF);
     }
     
-    private static int ALU_incByte(int data)
+    private int ALU_incByte(int data)
     {
-        if(getCarryFlag())
+        if(data == 1)//getCarryFlag())
             registers[7] = 0x01;
         else
             registers[7] = 0x00;
            
-        setHalfCarryFlag(data, 1);
-        setParityOverflowFlag(data == 0x7F);
+        //setHalfCarryFlag(data, 1);
+        //setParityOverflowFlag(data == 0x7F);
         data++;
         
-        setSignFlag((data & 0x0080) != 0);
-        data = data * 0x00FF;
+        //setSignFlag((data & 0x0080) != 0);
+        data = data & 0xFF;
         setZeroFlag(data == 0);
-        setOtherFlags(data);
+        //setOtherFlags(data);
             
         return data;
+    }
+    
+    private void setZeroFlag(boolean zero)
+    {
+        if(zero)
+            registers[7] = registers[7] | ZERO_MASK;
+        else
+            registers[7] = registers[7] & RESET_ZERO_MASK;
     }
     
     public DataPack getDataPack()
