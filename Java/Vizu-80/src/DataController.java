@@ -74,6 +74,12 @@ public class DataController
         return cpuCore.getDataPack();
     }
     
+    public DataPack resetCPU()
+    {
+        cpuCore.resetCPU();
+        return cpuCore.getDataPack();
+    }
+    
     public DataPack backStep()
     {     
         DataPack dat = null;

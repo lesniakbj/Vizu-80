@@ -1,15 +1,20 @@
 package src;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JButton;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+
 import javax.swing.UIManager;
 import javax.swing.Timer;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
 import javax.swing.ImageIcon;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
@@ -17,19 +22,21 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.EtchedBorder;
 
 import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
+
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.Font;
+
 import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Vizu80GUI - The main GUI for the Visual z80 Learning Emulator <br>
@@ -155,8 +162,9 @@ public class Vizu80GUI
     
     
     private static BackgroundMenuBar menuBar;                                       // Main menu bar -- Custom background 
-    private static JMenu fileMenu, optionsMenu;                                     // Menu bar options
-    private static JMenuItem aboutItem, exitItem, settingsItem, updateItem;         // Items within the menu bar
+    private static JMenu fileMenu, cpuMenu, optionsMenu;                           // Menu bar options
+    private static JMenuItem aboutItem, exitItem, 
+                                resetItem, settingsItem, updateItem;                // Items within the menu bar
     
     
     private static JStatusBar statusBar;                                            // Lower status bar -- Contains messages and statuses
@@ -336,6 +344,7 @@ public class Vizu80GUI
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
         
+        
         // Initialize and set various file menu properties 
         optionsMenu = new JMenu("Options");
         optionsMenu.setBackground(COLOR_MENU_BAR);
@@ -366,7 +375,28 @@ public class Vizu80GUI
             }
         });
         
+        cpuMenu = new JMenu("CPU Options");
+        cpuMenu.setBackground(COLOR_MENU_BAR);
+  
+        
+        
+        resetItem = new JMenuItem("Reset CPU...");
+        resetItem.setBackground(COLOR_MENU_BAR);
+        resetItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                // Reset the CPU and update GUI
+                cpuDataPack = cpuController.resetCPU();
+                getAllData();
+                updateRegisterLabels();
+            }
+        });
+        
+        cpuMenu.add(resetItem);
+        
         // Add the settings and update item to the options menu
+        optionsMenu.add(cpuMenu);
         optionsMenu.add(settingsItem);
         optionsMenu.addSeparator();
         optionsMenu.add(updateItem);
@@ -1395,9 +1425,7 @@ public class Vizu80GUI
                     cpuDataPack = cpuController.backStep();
                     if(cpuDataPack != null)
                     {
-                        cpuRegisterData = cpuDataPack.getRegisterData();
-                        cpuFullData = cpuDataPack.getFullRegisterData();
-                        cpuOtherData = cpuDataPack.getOtherData();
+                        getAllData();
                         dataCount--;
                     }
                     updateRegisterLabels();
@@ -1409,9 +1437,7 @@ public class Vizu80GUI
                     cpuDataPack = cpuController.backStep();
                     if(cpuDataPack != null)
                     {
-                        cpuRegisterData = cpuDataPack.getRegisterData();
-                        cpuFullData = cpuDataPack.getFullRegisterData();
-                        cpuOtherData = cpuDataPack.getOtherData();
+                        getAllData();
                         dataCount--;
                     }
                     updateRegisterLabels();
@@ -1424,9 +1450,7 @@ public class Vizu80GUI
     {
         
         cpuDataPack = cpuController.nextStep();
-        cpuRegisterData = cpuDataPack.getRegisterData();
-        cpuFullData = cpuDataPack.getFullRegisterData();
-        cpuOtherData = cpuDataPack.getOtherData();
+        getAllData();
          
         if(dataCount == totalDataCount)
         {
@@ -1484,6 +1508,13 @@ public class Vizu80GUI
         
         // FRAME COUNT 
         frameCountLabel.setText("Frame number: "+ dataCount + "/" + totalDataCount);
+    }
+    
+    private static void getAllData()
+    {
+        cpuRegisterData = cpuDataPack.getRegisterData();
+        cpuFullData = cpuDataPack.getFullRegisterData();
+        cpuOtherData = cpuDataPack.getOtherData();
     }
     
     private static void shutdown()

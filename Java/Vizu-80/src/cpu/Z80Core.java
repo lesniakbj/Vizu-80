@@ -17,23 +17,23 @@ public class Z80Core implements ICPU
     private static final int versionMinor = 0;
     private static final String versionPatch = "a";
     
-    private static final int SIGN_MASK          = 0x80;                           // 1 0 0 0 0 0 0 0 -- 128                                                                
-    private static final int RESET_SIGN_MASK    = 0x7F;     // 10000000 ^ 11111111 = 0 1 1 1 1 1 1 1 
+    private static final int SIGN_MASK          = 0b10000000;                       // 1 0 0 0 0 0 0 0 -- 128                                                                
+    private static final int RESET_SIGN_MASK    = ~SIGN_MASK;           // ~10000000 = 0 1 1 1 1 1 1 1 
                     
-    private static final int ZERO_MASK          = 0x40;                           // 0 1 0 0 0 0 0 0 -- 64
-    private static final int RESET_ZERO_MASK    = 0xBF;     // 01000000 ^ 11111111 = 1 0 1 1 1 1 1 1
+    private static final int ZERO_MASK          = 0b01000000;                       // 0 1 0 0 0 0 0 0 -- 64
+    private static final int RESET_ZERO_MASK    = ~ZERO_MASK;           // ~01000000 = 1 0 1 1 1 1 1 1
                                                                             
-    private static final int HALF_CARRY_MASK    = 0x10;                           // 0 0 0 1 0 0 0 0 -- 16
-    private static final int RESET_HALF_MASK    = 0xEF;     // 00010000 ^ 11111111 = 1 1 1 0 1 1 1 1 
+    private static final int HALF_CARRY_MASK    = 0b00010000;                       // 0 0 0 1 0 0 0 0 -- 16
+    private static final int RESET_HALF_MASK    = ~HALF_CARRY_MASK;     // ~00010000 = 1 1 1 0 1 1 1 1 
                                                                             
-    private static final int OFLOW_PARITY_MASK  = 0x04;                           // 0 0 0 0 0 1 0 0 -- 4
-    private static final int RESET_OFLOW_MASK   = 0xFB;     // 00000100 ^ 11111111 = 1 1 1 1 1 0 1 1
+    private static final int OFLOW_PARITY_MASK  = 0b00000100;                       // 0 0 0 0 0 1 0 0 -- 4
+    private static final int RESET_OFLOW_MASK   = ~OFLOW_PARITY_MASK;   // ~00000100 = 1 1 1 1 1 0 1 1
     
-    private static final int SUBTRACT_MASK      = 0x02;                           // 0 0 0 0 0 0 1 0 -- 2
-    private static final int RESET_SUB_MASK     = 0xFD;     // 00000010 ^ 11111111 = 1 1 1 1 1 1 0 1
+    private static final int SUBTRACT_MASK      = 0b00000010;                       // 0 0 0 0 0 0 1 0 -- 2
+    private static final int RESET_SUB_MASK     = ~SUBTRACT_MASK;       // ~00000010 = 1 1 1 1 1 1 0 1
     
-    private static final int CARRY_MASK         = 0x01;                           // 0 0 0 0 0 0 0 1 -- 1
-    private static final int RESET_CARRY_MASK   = 0xFE;     // 00000001 ^ 11111111 = 1 1 1 1 1 1 1 0 
+    private static final int CARRY_MASK         = 0b00000001;                       // 0 0 0 0 0 0 0 1 -- 1
+    private static final int RESET_CARRY_MASK   = ~CARRY_MASK;          // ~00000001 = 1 1 1 1 1 1 1 0 
     
     // Externalized parts of the CPU, defined when the z80 CPU is constructed, interfaces (need to be implemented)
     private IMemory         systemRAM;
@@ -61,6 +61,7 @@ public class Z80Core implements ICPU
     private boolean         maskingInterrupts;
     private boolean         nonMaskableInterrupt;
     
+    // DATA! -- DATA! -- DATA!
     int[] sendHalfRegData       = new int[16];  // A BC DE HL F     x 2
     int[] sendFullRegData       = new int[6];   // BC DE HL         x 2
     int[] sendOtherData         = new int[7];   // IX IY PC SP IR RR IDX
@@ -85,7 +86,7 @@ public class Z80Core implements ICPU
         
         blocked = false;
         isReset = false;
-        resetAddress = 0x1000;
+        resetAddress = 0x0000;
     }
     
     /**
@@ -206,9 +207,7 @@ public class Z80Core implements ICPU
     }
         
     /**
-     * Public facing method to find the current cycles of the CPU.
-     * 
-     * @return [TO-DO]: WTF IS THE cycles VARIABLE?!
+     * Public facing method to find the current cycle count of the CPU.
      * 
      * @since 0.0.a
      */
@@ -235,18 +234,6 @@ public class Z80Core implements ICPU
     public void setInterrupt()
     {
         nonMaskableInterrupt = true;
-    }
-    
-    /**
-     * Public facing method to get the CPU Program Counter.
-     * 
-     * @return Current location (in System RAM) of the Program, held by the Program Counter
-     * 
-     * @since 0.0.a
-     */
-    public int getProgramCounter()
-    {
-        return programCounter;
     }
     
     /**
@@ -832,6 +819,11 @@ public class Z80Core implements ICPU
             setFlag(Flags.HALF_CARRY);
         else
             unsetFlag(Flags.HALF_CARRY);
+    }
+    
+    public static String getVersion()
+    {
+        return version + "." + versionMinor + "." + versionPatch;
     }
     
     public DataPack getDataPack()
